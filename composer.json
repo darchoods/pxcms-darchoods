@@ -12,6 +12,11 @@
 
         "zendframework/zend-xmlrpc"         : "~2.3"
     },
+    "autoload": {
+        "classmap": [
+            "helpers"
+        ]
+    ],
     "repositories": [
         { "type": "composer", "url": "https://packages.zendframework.com" },
         { "type": "vcs", "url": "https://github.com/cysha/installers" }
