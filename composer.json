@@ -9,8 +9,11 @@
     "minimum-stability": "dev",
     "require": {
         "composer/installers"               : "dev-master",
+
+        "zendframework/zend-xmlrpc"         : "~2.3",
     },
     "repositories": [
+        { "type": "composer", "url": "https://packages.zendframework.com" },
         { "type": "vcs", "url": "https://github.com/cysha/installers" }
     ]
 }
