@@ -1,4 +1,4 @@
-PXCMS-Pages
+PXCMS-Darchoods
 ========
 
-Page Module for Phoenix CMS
+Darchoods.net Functionality Module for PhoenixCMS
