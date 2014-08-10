@@ -10,7 +10,7 @@
     "require": {
         "composer/installers"               : "dev-master",
 
-        "zendframework/zend-xmlrpc"         : "~2.3",
+        "zendframework/zend-xmlrpc"         : "~2.3"
     },
     "repositories": [
         { "type": "composer", "url": "https://packages.zendframework.com" },
