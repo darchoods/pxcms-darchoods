@@ -1,5 +1,8 @@
 <?php namespace Cysha\Modules\Darchoods\Helpers\IRC;
 
+
+use Zend\XmlRpc as XmlRpc;
+
 class atheme
 {
     public $xmlURL;
@@ -18,24 +21,24 @@ class atheme
         return call_user_func_array(array($this, 'cmd'), $args);
     }
 
-    public function cmd($nick = '.', $id = '.', $cmd = 'atheme.command')
+    public function cmd($nick = '.', $uid = '.', $cmd = 'atheme.command')
     {
-        $client = new Zend\XmlRpc\Client($this->xmlURL);
+        $client = new XmlRpc\Client($this->xmlURL);
 
             $params = [];
-            $params[] = $id;
+            $params[] = $uid;
             $params[] = $nick;
             $params[] = $_SERVER['REMOTE_ADDR'];
             $params = array_merge($params, (count($this->params) ? $this->params : []));
 
-        $request = new Zend\XmlRpc\Request();
+        $request = new XmlRpc\Request();
             $request->setMethod($cmd);
             $request->setParams($params);
 
         try {
             $client->doRequest($request);
 
-        } catch ( Zend\XmlRpc\Client\FaultException $e) {
+        } catch (XmlRpc\Client\FaultException $e) {
             $a = $client->getLastRequest();
             echo \Debug::dump($a, '', 'red');
         }
@@ -65,6 +68,22 @@ class atheme
     public function parseXML($xml)
     {
         return json_decode(json_encode((array) simplexml_load_string($xml)), true);
+    }
+
+    public function getToken($token = '.')
+    {
+        if ($token == '.') {
+            return '.';
+        }
+
+        return Cookie::get('darchoods.token', null);
+    }
+
+    public function testTimeout(XmlRpc\Response $response)
+    {
+        if ($response->isFault() && $response->getFault()->getCode() === 15) {
+            Cookie::forget('darchoods.token');
+        }
     }
 
     public function checkResponse($response, $faultCodes = [])

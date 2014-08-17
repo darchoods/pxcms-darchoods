@@ -1,8 +1,13 @@
 <?php namespace Cysha\Modules\Darchoods\Controllers\Module;
 
+use Cysha\Modules\Auth as PXAuth;
 use Cysha\Modules\Darchoods\Helpers\IRC as IRC;
 use Auth;
 use Input;
+use Cookie;
+use Redirect;
+use URL;
+use Config;
 use NickServ;
 
 class AuthController extends BaseController
@@ -30,21 +35,24 @@ class AuthController extends BaseController
             return Redirect::route('pxcms.user.login')->withError(Lang::get('core::auth.user.notfound'));
         }
 
+        // throw the token into a session
+        Cookie::queue('darchoods.token', $response[1], 60);
+
         // if they passed, try looking for the user in the database
         $objUser = PXAuth\Models\User::whereUsername($input['email'])->get()->first();
 
         // if we cant find the user, register their details in the db
-        if ($objUser === null) {
-            $objUser = \Event::fire('darchoods.auth.register');
+        if (!count($objUser)) {
+            $userDetails = \Event::fire('darchoods.user.info', [$input['email']]);
+            $objUser = \Event::fire('darchoods.user.register', ['info' => $userDetails]);
+        }
+
+        if (!count($objUser)) {
+            return Redirect::route('pxcms.user.login')->withError('Cannot retreive user from database.');
         }
 
         // actually log em in
         Auth::login($objUser);
-
-        // throw the token into a session
-        Session::put('atheme.token', $response[1]);
-        // the token only lasts for an hour
-        Session::put('atheme.timeout', ((60 * 60)*60)+time());
 
         return Redirect::intended(URL::route(Config::get('auth::user.redirect_to')));
     }

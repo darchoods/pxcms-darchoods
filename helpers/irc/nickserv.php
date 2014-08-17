@@ -15,15 +15,15 @@ class nickserv extends atheme
         return $this->checkResponse($this->doCmd($password, $nickname, 'atheme.login'), [1, 3, 5, 6]);
     }
 
-    public function logout($nickname, $uid)
+    public function logout($nickname, $token)
     {
-        return $this->checkResponse($this->doCmd($nickname, $uid, 'atheme.logout'), [1, 3, 5]);
+        return $this->checkResponse($this->doCmd($nickname, $this->getToken($token), 'atheme.logout'), [1, 3, 5]);
     }
 
-    public function getInfo($nickname = 'x', $uid = '.')
+    public function getInfo($nickname = 'x', $token = '.')
     {
         $this->addParams(sprintf('NICKSERV INFO %s', $nickname));
-        return $this->checkResponse($this->doCmd($nickname, $uid), []);
+        return $this->checkResponse($this->doCmd($nickname, $this->getToken($token)), []);
     }
 
 }

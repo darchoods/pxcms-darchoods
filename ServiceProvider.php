@@ -7,6 +7,8 @@ class ServiceProvider extends BaseServiceProvider
 {
     public function register()
     {
+        \Config::set('auth.model', 'Cysha\Modules\Darchoods\Models\User');
+
         //$this->registerOtherPackages();
     }
 
