@@ -83,7 +83,10 @@ class atheme
     {
         if ($response->isFault() && $response->getFault()->getCode() === 15) {
             Cookie::forget('darchoods.token');
+            return true;
         }
+
+        return false;
     }
 
     public function checkResponse($response, $faultCodes = [])
@@ -93,6 +96,7 @@ class atheme
         }
 
         $str = $this->parseXML($response->__toString());
+        echo \Debug::dump($str, '');die;
         return [true, $str['params']['param']['value']['string']];
     }
 }

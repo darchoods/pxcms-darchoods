@@ -10,7 +10,8 @@
     "require": {
         "composer/installers"               : "dev-master",
 
-        "zendframework/zend-xmlrpc"         : "~2.3"
+        "zendframework/zend-xmlrpc"         : "~2.3",
+        "thomaswelton/laravel-gravatar"     : "0.0.x"
     },
     "autoload": {
         "classmap": {
