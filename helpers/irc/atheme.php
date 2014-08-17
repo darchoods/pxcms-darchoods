@@ -5,8 +5,9 @@ class atheme
     public $xmlURL;
     public $params;
 
-    public function __construct($ip, $port)
+    public function __construct()
     {
+        list($ip, $port) = explode(':', \Config::get('darchoods::module.atheme'));
         $this->xmlURL = 'http://'.$ip.':'.$port.'/xmlrpc';
     }
 

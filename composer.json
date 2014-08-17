@@ -13,9 +13,9 @@
         "zendframework/zend-xmlrpc"         : "~2.3"
     },
     "autoload": {
-        "classmap": [
-            "helpers"
-        ]
+        "classmap": {
+            "psr-4": {"Cysha\\Modules\\Darchoods\\Helpers\\IRC\\": "helpers/"}
+        }
     },
     "repositories": [
         { "type": "composer", "url": "https://packages.zendframework.com" },
