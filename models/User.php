@@ -24,7 +24,7 @@ class User extends VerifyVersion
     ];
 
     protected static $messages;
-    protected $fillable = ['username', 'first_name', 'last_name', 'verified', 'disabled', 'created_at', 'updated_at'];
+    protected $fillable = ['username', 'first_name', 'last_name', 'email', 'nicks', 'verified', 'disabled', 'created_at', 'updated_at'];
     protected $identifiableName = 'username';
 
     protected $link = [
@@ -61,6 +61,20 @@ class User extends VerifyVersion
     //     return $this->hasManyThrough(Config::get('verify::permission_model'), Config::get('verify::group_model'));
     // }
 
+    public function getScreennameAttribute($value)
+    {
+        $nick = $value;
+        if ($this->use_nick == '-1' && !empty($this->first_name) && !empty($this->last_name)) {
+            return $this->name;
+        }
+
+        if (!isset($this->nicks) || !count($this->nicks)) {
+            return $nick;
+        }
+
+        return array_get($this->nicks, $this->use_nick, $nick);
+    }
+
     public function getNameAttribute()
     {
         return implode(' ', [$this->first_name, $this->last_name]);
@@ -69,10 +83,20 @@ class User extends VerifyVersion
     public function getAvatarAttribute($val)
     {
         if (empty($val) || $val == 'gravatar') {
-            return sprintf('http://www.gravatar.com/avatar/%s.png?s=64&d=mm&rating=g', md5($this->attributes['email']));
+            return sprintf('http://www.gravatar.com/avatar/%s.png', md5($this->attributes['email']));
         }
 
         return $val;
+    }
+
+    public function getNicksAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
+    public function setNicksAttribute($value)
+    {
+        $this->attributes['nicks'] = json_encode($value);
     }
 
     public function scopeFindOrCreate($query, array $where, array $attrs = array())

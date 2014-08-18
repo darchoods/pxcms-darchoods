@@ -28,9 +28,10 @@ Route::group(array('prefix' => Config::get('core::routes.paths.user')), function
 
 });
 
-Route::get('/',             array('as' => 'pxcms.pages.home',              'uses' => $namespace.'\PageController@viewNews'));
-Route::get('news',          array('as' => 'darchoods.pages.news',          'uses' => $namespace.'\PageController@viewNews'));
-Route::get('heartbeat',     array('as' => 'darchoods.pages.heartbeat',     'uses' => $namespace.'\PageController@viewHeartbeat'));
-Route::get('channels',      array('as' => 'darchoods.pages.channels',      'uses' => $namespace.'\PageController@viewChannels'));
-Route::get('api',           array('as' => 'darchoods.pages.apidoc',        'uses' => $namespace.'\PageController@viewApiDoc'));
-Route::post('api.php',      array('as' => 'darchoods.pages.api',           'uses' => $namespace.'\PageController@viewApi'));
+Route::get('/',             array('as' => 'pxcms.pages.home',              'uses' => $namespace.'\PagesController@getNews'));
+Route::get('qdb',           array('as' => 'darchoods.qdb.index',          'uses' => $namespace.'\PagesController@getNews'));
+Route::get('news',          array('as' => 'darchoods.pages.news',          'uses' => $namespace.'\PagesController@getNews'));
+Route::get('heartbeat',     array('as' => 'darchoods.pages.heartbeat',     'uses' => $namespace.'\PagesController@viewHeartbeat'));
+Route::get('channels',      array('as' => 'darchoods.pages.channels',      'uses' => $namespace.'\PagesController@getChannels'));
+Route::get('api',           array('as' => 'darchoods.pages.apidoc',        'uses' => $namespace.'\PagesController@viewApiDoc'));
+Route::post('api.php',      array('as' => 'darchoods.pages.api',           'uses' => $namespace.'\PagesController@viewApi'));

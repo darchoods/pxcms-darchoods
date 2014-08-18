@@ -1,10 +1,11 @@
 <?php
 
 Event::listen('darchoods.user.register', function ($info) {
-    $info = array_get($info, '0', []);
 
     $userInfo = [
         'username'           => array_get($info, 'acct name'),
+        'email'              => array_get($info, 'email'),
+        'nicks'              => strpos(array_get($info, 'nicks'), ' ') ? explode(' ', array_get($info, 'nicks')) : [array_get($info, 'nicks')],
         'verified'           => true,
         'disabled'           => false,
         'created_at'         => strtotime(array_get($info, 'registered')),
