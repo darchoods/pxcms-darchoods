@@ -33,13 +33,6 @@ class InstallCommand extends BaseCommand
     public function fire()
     {
         $packages = array(
-            'thomaswelton/laravel-gravatar' => array(
-                'name'      => 'Gravatar',
-                'migrate'   => false,
-                'seed'      => false,
-                'config'    => false,
-                'publish'   => true,
-            ),
         );
 
         $this->install($packages);
