@@ -1,10 +1,11 @@
 {
     "enabled": true,
     "provider": "Cysha\\Modules\\Darchoods\\ServiceProvider",
-    "order": 100,
+    "order": 5,
     "include": [
         "helpers/irc/atheme.php",
         "helpers/irc/nickserv.php",
-        "helpers/irc/chanserv.php"
+        "helpers/irc/chanserv.php",
+        "helpers/irc/ColorParser.php"
     ]
 }
