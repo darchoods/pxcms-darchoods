@@ -1,7 +1,7 @@
 <?php namespace Cysha\Modules\Darchoods\Helpers\IRC;
 
-
 use Zend\XmlRpc as XmlRpc;
+use Cookie;
 
 class atheme
 {
@@ -70,19 +70,15 @@ class atheme
         return json_decode(json_encode((array) simplexml_load_string($xml)), true);
     }
 
-    public function getToken($token = '.')
+    public function getToken()
     {
-        if ($token == '.') {
-            return '.';
-        }
-
-        return Cookie::get('darchoods.token', null);
+        return Cookie::get('darchoods_token', null);
     }
 
     public function testTimeout(XmlRpc\Response $response)
     {
         if ($response->isFault() && $response->getFault()->getCode() === 15) {
-            Cookie::forget('darchoods.token');
+            Cookie::forget('darchoods_token');
             return true;
         }
 
@@ -91,12 +87,11 @@ class atheme
 
     public function checkResponse($response, $faultCodes = [])
     {
-        if ($response->isFault() && in_array($response->getFault()->getCode(), $faultCodes)) {
+        if ($response->isFault() && (!empty($faultCodes) && in_array($response->getFault()->getCode(), $faultCodes))) {
             return [$response->getFault()->getCode(), $response->getFault()->getMessage()];
         }
 
         $str = $this->parseXML($response->__toString());
-        echo \Debug::dump($str, '');die;
-        return [true, $str['params']['param']['value']['string']];
+        return [true, array_get($str, 'params.param.value.string', null)];
     }
 }

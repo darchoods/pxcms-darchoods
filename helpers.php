@@ -6,8 +6,10 @@ function getUserInfo($username = '.')
         return Session::get('userInfo');
     }
 
-    $info = with(new Cysha\Modules\Darchoods\Helpers\IRC\NickServ)->getInfo($username);
-
+    if ($username == '.') {
+        $username = Auth::user()->username;
+    }
+    $info = irc('nickserv')->getInfo($username);
     if (array_get($info, '0', false) == false) {
         return [];
     }
@@ -30,4 +32,10 @@ function getUserInfo($username = '.')
     Session::set('userInfo', $userInfo);
 
     return $userInfo;
+}
+
+function irc($module)
+{
+    $module = 'Cysha\Modules\Darchoods\Helpers\IRC\\'.$module;
+    return with(new $module);
 }
