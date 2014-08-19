@@ -9,6 +9,7 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         \Config::set('auth.model', 'Cysha\Modules\Darchoods\Models\User');
+        \Config::set('auth::user.redirect_to', 'pxcms.user.dashboard');
 
         //$this->registerOtherPackages();
     }
@@ -24,7 +25,6 @@ class ServiceProvider extends BaseServiceProvider
     private function registerOtherPackages()
     {
         $serviceProviders = [
-            'Thomaswelton\LaravelGravatar\LaravelGravatarServiceProvider',
         ];
 
         foreach ($serviceProviders as $sp) {
@@ -32,7 +32,6 @@ class ServiceProvider extends BaseServiceProvider
         }
 
         $aliases = [
-            'Gravatar' => 'Thomaswelton\LaravelGravatar\Facades\Gravatar',
         ];
 
         foreach ($aliases as $alias => $class) {

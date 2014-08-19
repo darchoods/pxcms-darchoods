@@ -8,6 +8,8 @@ use Cookie;
 use Redirect;
 use URL;
 use Config;
+use Session;
+use Lang;
 use NickServ;
 
 class AuthController extends BaseController
@@ -36,33 +38,46 @@ class AuthController extends BaseController
         }
 
         // throw the token into a session
-        Cookie::queue('darchoods.token', $response[1], 60);
+        Cookie::queue('darchoods_token', $response[1], 60);
 
         // if they passed, try looking for the user in the database
-        $objUser = PXAuth\Models\User::whereUsername($input['email'])->get()->first();
+        $userModel = Config::get('auth.model');
+        $objUser = $userModel::whereUsername($input['email'])->get()->first();
 
+        $userInfo = ['info' => getUserInfo($input['email'])];
         // if we cant find the user, register their details in the db
         if (!count($objUser)) {
-            $userDetails = \Event::fire('darchoods.user.info', [$input['email']]);
-            $objUser = \Event::fire('darchoods.user.register', ['info' => $userDetails]);
+            $objUser = \Event::fire('darchoods.user.register', $userInfo);
+            $objUser = array_get($objUser, '0', []);
         }
+        \Event::fire('darchoods.user.update', $userInfo);
 
         if (!count($objUser)) {
-            return Redirect::route('pxcms.user.login')->withError('Cannot retreive user from database.');
+            return Redirect::route('pxcms.user.login')->withError(Lang::get('core::auth.user.notfound'));
         }
 
         // actually log em in
-        Auth::login($objUser);
+        Auth::login($objUser, false);
 
-        return Redirect::intended(URL::route(Config::get('auth::user.redirect_to')));
+        return Redirect::intended(URL::route(Config::get('auth::user.redirect_to')))
+            ->withInfo(Lang::get('darchoods::auth.user.welcome', [$objUser->username]));
     }
 
     public function getLogout()
     {
+        // if we have an active session
         if (Auth::check()) {
+            // remove the atheme cookie if we have one
+            if (($token = Cookie::get('darchoods.token', null)) !== null) {
+                with(new IRC\NickServ)->logout(Auth::user()->username, $token);
+                Cookie::forget('darchoods.token');
+            }
+
+            // log the user out and flush the sessions
             Auth::logout();
             Session::flush();
 
+            // and go home
             return Redirect::route('pxcms.pages.home')->withInfo('Successfully logged out.');
         }
 
