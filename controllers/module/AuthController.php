@@ -60,6 +60,7 @@ class AuthController extends BaseController
         Auth::login($objUser, false);
 
         return Redirect::intended(URL::route(Config::get('auth::user.redirect_to')))
+            ->withCookie($tokenCookie)
             ->withInfo(Lang::get('darchoods::auth.user.welcome', [$objUser->username]));
     }
 

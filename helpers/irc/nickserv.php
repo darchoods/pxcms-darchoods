@@ -23,7 +23,7 @@ class nickserv extends atheme
     public function getInfo($nickname = 'x')
     {
         $this->addParams(sprintf('NICKSERV INFO %s', $nickname));
-        return $this->checkResponse($this->doCmd($nickname, $this->getToken()));
+        return $this->checkResponse($this->doCmd($nickname, $this->getToken()), []);
     }
 
 }

@@ -43,10 +43,6 @@ function irc($module)
 }
 
 
-
-
-
-
 //functions for this page to work
 function compare($x, $y)
 {

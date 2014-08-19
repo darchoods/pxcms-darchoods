@@ -6,6 +6,7 @@ Event::listen('darchoods.user.register', function ($info) {
     }
 
     $userInfo = [
+        'username'           => array_get($info, 'acct name'),
         'email'              => array_get($info, 'email'),
         'nicks'              => strpos(array_get($info, 'nicks'), ' ') ? explode(' ', array_get($info, 'nicks')) : [array_get($info, 'nicks')],
         'verified'           => true,
