@@ -26,11 +26,11 @@ class User extends VerifyVersion
 
     protected static $messages;
     protected $fillable = ['username', 'first_name', 'last_name', 'email', 'nicks', 'verified', 'disabled', 'created_at', 'updated_at'];
-    protected $identifiableName = 'username';
+    protected $identifiableName = 'name';
 
     protected $link = [
         'route'      => 'pxcms.user.view',
-        'attributes' => ['name' => 'username'],
+        'attributes' => ['name' => 'name'],
     ];
 
     public function __construct()
@@ -62,21 +62,21 @@ class User extends VerifyVersion
     //     return $this->hasManyThrough(Config::get('verify::permission_model'), Config::get('verify::group_model'));
     // }
 
-    public function getScreennameAttribute($value)
+    public function getNameAttribute()
     {
-        $nick = $value;
         if ($this->use_nick == '-1' && !empty($this->first_name) && !empty($this->last_name)) {
-            return $this->name;
+            return $this->fullName;
         }
 
         if (!isset($this->nicks) || !count($this->nicks)) {
-            return $nick;
+            return $this->username;
         }
 
-        return array_get($this->nicks, $this->use_nick, $nick);
+        return array_get($this->nicks, $this->use_nick, $this->username);
     }
 
-    public function getNameAttribute()
+
+    public function getFullNameAttribute()
     {
         return implode(' ', [$this->first_name, $this->last_name]);
     }
