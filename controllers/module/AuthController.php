@@ -17,7 +17,7 @@ class AuthController extends BaseController
 
     public function getLogin()
     {
-        if (!Auth::guest()) {
+        if (!Auth::guest() && (Auth::user()->isAdmin() && Cookie::get('darchoods_token', null) !== null)) {
             return Redirect::route('pxcms.user.dashboard');
         }
 
@@ -60,7 +60,6 @@ class AuthController extends BaseController
         Auth::login($objUser, false);
 
         return Redirect::intended(URL::route(Config::get('auth::user.redirect_to')))
-            ->withCookie($tokenCookie)
             ->withInfo(Lang::get('darchoods::auth.user.welcome', [$objUser->username]));
     }
 
