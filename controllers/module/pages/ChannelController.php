@@ -6,6 +6,8 @@ use Illuminate\Support\Collection;
 use Auth;
 use DB;
 use URL;
+use Session;
+use Config;
 
 class ChannelController extends BaseController
 {
@@ -26,16 +28,15 @@ class ChannelController extends BaseController
             $dbChans = DB::connection('denora')->table('chan')->get();
         } catch (\PDOException $e) {
             Session::flash('error', 'Cannot get channel list from IRC.');
-            return $this->setView('pages.channels.index', ['chans' => []]);
+            return [];
         }
 
-        $blacklist = explode(' ', '* #staff #opers #rss #idlerpg #dbg');
-        $networkList = explode(' ', '#bots #support #idlerpg #darchoods #darkscience');
-        $communityChans = explode(' ', '#cybershade #minecraft #artoftheninja #sector5d #drive-in #webdev');
+        $chanList = Config::get('darchoods::channels.list', null);
+        $chanList = ($chanList !== null ? json_decode($chanList, true) : []);
 
         $dbChans = new Collection($dbChans);
-        $dbChans = $dbChans->filter(function (&$channel) use ($blacklist, $networkList, $communityChans) {
-            if (in_array($channel->channel, $blacklist)) {
+        $dbChans = $dbChans->filter(function (&$channel) use ($chanList) {
+            if (array_get($chanList, $channel->channel) == 'blacklist') {
                 return false;
             }
 
@@ -48,16 +49,13 @@ class ChannelController extends BaseController
             if (strstr($checkModes, 'p')) { //private
                 return false;
             }
-            //if (strstr($checkModes, 'P')) { //private
-            //    return false;
-            //}
             if (strstr($checkModes, 's')) { //secret
-                    return false;
+                return false;
             }
             if (strstr($checkModes, 'O')) { //opers
                 return false;
             }
-            if ($channel->currentusers == 0) { // no channel count
+            if ($channel->currentusers <= 1) { // no channel count
                 return false;
             }
 
@@ -69,11 +67,11 @@ class ChannelController extends BaseController
             $channel->topic = $colorize->colorize($channel->topic);
             $channel->topic = denora_colorconvert($channel->topic);
 
-            if (in_array($channel->channel, $networkList)) {
+            if (array_get($chanList, $channel->channel) == 'network') {
                 $channel->extra = 'success';
             }
 
-            if (in_array($channel->channel, $communityChans)) {
+            if (array_get($chanList, $channel->channel) == 'community') {
                 $channel->extra = 'info';
             }
 
