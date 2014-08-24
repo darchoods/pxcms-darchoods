@@ -147,24 +147,17 @@ class ChannelController extends BaseConfigController
 
     public function modelButtons($channel, $mode)
     {
-        $btn = '<a href="/admin/channels/%1$s/community" class="btn %2$s btn-sm btn-labeled"><span class="btn-label"><i class="glyphicon glyphicon-home"></i></span><span></span></a>&nbsp;
-        <a href="/admin/channels/%1$s/network" class="btn %3$s btn-sm btn-labeled"><span class="btn-label"><i class="glyphicon glyphicon-tower"></i></span><span></span></a>&nbsp;
-        <a href="/admin/channels/%1$s/blacklist" class="btn %4$s btn-sm btn-labeled"><span class="btn-label"><i class="glyphicon glyphicon-ban-circle"></i></span><span></span></a>';
+        $btn = '<a href="/admin/channels/%1$s/network" class="btn %2$s btn-sm btn-labeled"><span class="btn-label"><i class="glyphicon glyphicon-tower"></i></span><span></span></a>&nbsp;
+        <a href="/admin/channels/%1$s/blacklist" class="btn %3$s btn-sm btn-labeled"><span class="btn-label"><i class="glyphicon glyphicon-ban-circle"></i></span><span></span></a>';
 
         $btn = sprintf(
             $btn,
             str_replace('#', '§', $channel),
-            ($mode != 'community' ? 'btn-info' : 'btn-disabled'),
             ($mode != 'network' ? 'btn-success' : 'btn-disabled'),
             ($mode != 'blacklist' ? 'btn-danger' : 'btn-disabled')
         );
 
         return $btn;
-    }
-
-    public function markAsCommunity($channel)
-    {
-        return $this->markAs('community', $channel);
     }
 
     public function markAsNetwork($channel)

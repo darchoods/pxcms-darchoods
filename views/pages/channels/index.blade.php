@@ -2,9 +2,9 @@
     <h2>Network Channel Listings</h2>
 </div>
 
-<p>Below is a list of channels that are currently residing on the Darchoods Network. Channels highlighted with different colors indicate a special use. Green Channels denote Network Specific Channels, whereas Blue Channels are for community based channels.</p>
+<p>Below is a list of channels that are currently residing on the Darchoods Network. Channels highlighted in green denote Network Specific Channels.</p>
 
-<table width="100%" border="0" class="table table-striped table-hover table-bordered">
+<table width="100%" border="0" class="table table-hover table-bordered">
 <thead>
     <tr>
         <th width="5%">Channel Name</th>
