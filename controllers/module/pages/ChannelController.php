@@ -67,6 +67,10 @@ class ChannelController extends BaseController
             $channel->topic = $colorize->colorize($channel->topic);
             $channel->topic = denora_colorconvert($channel->topic);
 
+            if (!empty($channel->topic) && !empty($channel->topicauthor)) {
+                $channel->topic .= '<span class="pull-right"><small> set by '.profile($channel->topicauthor).'</small></span>';
+            }
+
             if (array_get($chanList, $channel->channel) == 'network') {
                 $channel->extra = 'success';
             }

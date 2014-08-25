@@ -42,6 +42,23 @@ function irc($module)
     return with(new $module);
 }
 
+function profile($username)
+{
+    if (empty($username)) {
+        return 'Unknown';
+    }
+
+    return Cache::remember('users.'.$username, 60, function () use ($username) {
+        $authModel = Config::get('auth.model');
+        $objUser = $authModel::whereUsername($username)->orWhere('nicks', 'LIKE', '%"'.$username.'"%')->get()->first();
+        if ($objUser !== null) {
+            return array_get($objUser->transform(), 'link');
+        }
+
+        return $username;
+    });
+}
+
 
 //functions for this page to work
 function compare($x, $y)
