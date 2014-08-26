@@ -51,6 +51,7 @@ class AuthController extends BaseController
             $objUser = array_get($objUser, '0', []);
         }
         \Event::fire('darchoods.user.update', $userInfo);
+        \Event::fire('darchoods.user.list');
 
         if (!count($objUser)) {
             return Redirect::route('pxcms.user.login')->withError(Lang::get('core::auth.user.notfound'));

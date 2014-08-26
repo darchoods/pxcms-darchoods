@@ -9,6 +9,11 @@ class BaseController extends CoreController
     public function __construct()
     {
         parent::__construct();
+        $this->objTheme->set('mode', 'basic');
     }
 
+    public function setDecorativeMode()
+    {
+        $this->objTheme->set('mode', 'decorative');
+    }
 }

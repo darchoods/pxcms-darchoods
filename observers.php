@@ -26,8 +26,8 @@ Event::listen('darchoods.user.register', function ($info) {
 Event::listen('darchoods.user.update', function ($info) {
     // update the alias list, email
     $userInfo = [
-        'email'              => array_get($info, 'email'),
-        'nicks'              => strpos(array_get($info, 'nicks'), ' ') ? explode(' ', array_get($info, 'nicks')) : [array_get($info, 'nicks')],
+        'email' => array_get($info, 'email'),
+        'nicks' => strpos(array_get($info, 'nicks'), ' ') ? explode(' ', array_get($info, 'nicks')) : [array_get($info, 'nicks')],
     ];
 
     $model = Config::get('auth.model');
@@ -44,4 +44,22 @@ Event::listen('darchoods.user.update', function ($info) {
         $objRoleSA = \Cysha\Modules\Auth\Models\Role::whereName(Config::get('auth::roles.super_group_name'))->first();
         $save = $objUser->roles()->sync(array($objRoleSA->id));
     }
+});
+
+Event::listen('darchoods.user.list', function () {
+    $authModel = Config::get('auth.model');
+    $users = $authModel::all();
+
+    $usernames = [];
+    $users->each(function ($model) use (&$usernames) {
+        $usernames[] = $model->username;
+
+        if (is_array($model->nicks)) {
+            $usernames = array_merge($usernames, $model->nicks);
+        }
+    });
+    array_filter($usernames);
+    $usernames = array_unique($usernames);
+
+    Cache::forever('darchoods.user.list', $usernames);
 });

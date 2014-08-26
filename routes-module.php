@@ -28,11 +28,18 @@ Route::group(array('prefix' => Config::get('core::routes.paths.user')), function
 
 });
 
+/** News Module Override **/
+Route::group(['prefix' => 'news'], function () use ($namespace) {
 
-// Route::get('/', array('as' => 'pxcms.pages.home', 'uses' => $namespace.'\PagesController@getNews'));
+    Route::model('newsid', 'Cysha\Modules\News\Models\News');
+    Route::get('{newsid}-{slug}', ['as' => 'pxcms.news.view', 'uses' => $namespace.'\Pages\NewsController@getNewsById']);
+});
+
+Route::get('/', ['as' => 'pxcms.pages.home', 'uses' => $namespace.'\Pages\NewsController@getNews']);
+
+
 // Route::get('qdb', array('as' => 'darchoods.qdb.index', 'uses' => $namespace.'\PagesController@getNews'));
-// Route::get('news', array('as' => 'darchoods.pages.news', 'uses' => $namespace.'\PagesController@getNews'));
-Route::get('heartbeat', array('as' => 'darchoods.pages.heartbeat', 'uses' => $namespace.'\PagesController@viewHeartbeat'));
+Route::get('heartbeat', array('as' => 'darchoods.pages.heartbeat', 'uses' => $namespace.'\Pages\HeartbeatController@getIndex'));
 Route::get('channels', array('as' => 'darchoods.pages.channels', 'uses' => $namespace.'\Pages\ChannelController@getIndex'));
 // Route::get('api', array('as' => 'darchoods.pages.apidoc', 'uses' => $namespace.'\PagesController@viewApiDoc'));
 // Route::post('api.php', array('as' => 'darchoods.pages.api', 'uses' => $namespace.'\PagesController@viewApi'));

@@ -14,8 +14,8 @@ class ChannelController extends BaseController
 
     public function getIndex()
     {
-
-
+        $this->setTitle('Channel List');
+        $this->setDecorativeMode();
 
         return $this->setView('pages.channels.index', [
             'chans' => $this->getCollection(),

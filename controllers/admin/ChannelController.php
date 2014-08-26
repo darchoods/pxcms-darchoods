@@ -1,6 +1,5 @@
 <?php namespace Cysha\Modules\Darchoods\Controllers\Admin;
 
-use Cysha\Modules\Core\Controllers\Admin\Config\BaseConfigController;
 use Cysha\Modules\Darchoods\Helpers\IRC as IRC;
 use Cysha\Modules\Core\Models\DBConfig;
 use Illuminate\Support\Collection;
@@ -13,7 +12,7 @@ use Config;
 use Redirect;
 use Request;
 
-class ChannelController extends BaseConfigController
+class ChannelController extends BaseAdminController
 {
     use \Cysha\Modules\Admin\Traits\DataTableTrait;
 
@@ -21,7 +20,7 @@ class ChannelController extends BaseConfigController
     {
         parent::__construct();
 
-        $this->objTheme->setTitle('<i class="fa fa-user"></i> Channel Manager');
+        $this->objTheme->setTitle('<i class="glyphicon glyphicon-list-alt"></i> Channel Manager');
         $this->objTheme->breadcrumb()->add('Channel Manager', URL::route('admin.channels.index'));
         $this->assets();
         $this->objTheme->asset()->add('datatable-channelsjs', 'packages/module/darchoods/assets/admin/js/channel_manager.js', array('datatable-js'));
@@ -63,6 +62,7 @@ class ChannelController extends BaseConfigController
                 'tr'        => function ($model) {
                     return $model->currentusers;
                 },
+                'tr-class' => 'hide-sm',
                 'filtering' => true,
                 'width'     => '5%',
             ],
@@ -71,6 +71,7 @@ class ChannelController extends BaseConfigController
                 'tr'        => function ($model) {
                     return $model->maxusers;
                 },
+                'tr-class' => 'hide-sm',
                 'filtering' => true,
                 'width'     => '5%',
             ],
@@ -79,6 +80,7 @@ class ChannelController extends BaseConfigController
                 'tr'        => function ($model) {
                     return $model->topic;
                 },
+                'tr-class' => 'hide-sm',
                 'sorting'   => true,
                 'filtering' => true,
                 'width'     => '45%',
@@ -87,9 +89,7 @@ class ChannelController extends BaseConfigController
             'action' => [
                 'th' => 'Actions',
                 'tr' => function ($model) use ($chanList) {
-
-                    $chan = array_get($chanList, $model->channel, '');
-
+                    $chan = array_get($chanList, $model->channel, null);
                     return $this->modelButtons($model->channel, $chan);
                 },
                 'sorting'   => false,
@@ -147,45 +147,39 @@ class ChannelController extends BaseConfigController
 
     public function modelButtons($channel, $mode)
     {
-        $btn = '<a href="/admin/channels/%1$s/network" class="btn %2$s btn-sm btn-labeled"><span class="btn-label"><i class="glyphicon glyphicon-tower"></i></span><span></span></a>&nbsp;
-        <a href="/admin/channels/%1$s/blacklist" class="btn %3$s btn-sm btn-labeled"><span class="btn-label"><i class="glyphicon glyphicon-ban-circle"></i></span><span></span></a>';
+        $btn = '<a href="/admin/channels/%1$s/network" class="btn %2$s btn-sm btn-labeled" data-toggle="tooltip" title="Assign Channel Network Status"><span class="btn-label"><i class="glyphicon glyphicon-tower"></i></span><span></span></a>&nbsp;
+        <a href="/admin/channels/%1$s/blacklist" class="btn %3$s btn-sm btn-labeled" data-toggle="tooltip" title="Blacklist Channel"><span class="btn-label"><i class="glyphicon glyphicon-ban-circle"></i></span><span></span></a>
+        <a href="/admin/servers/%1$s/default" class="btn %4$s btn-sm btn-labeled" data-toggle="tooltip" title="Reset Channel to Default"><span class="btn-label"><i class="glyphicon glyphicon-certificate"></i></span><span></span></a>';
 
         $btn = sprintf(
             $btn,
             str_replace('#', '§', $channel),
             ($mode != 'network' ? 'btn-success' : 'btn-disabled'),
-            ($mode != 'blacklist' ? 'btn-danger' : 'btn-disabled')
+            ($mode != 'blacklist' ? 'btn-danger' : 'btn-disabled'),
+            (!empty($mode) ? 'btn-default' : 'btn-disabled')
         );
-
         return $btn;
     }
 
-    public function markAsNetwork($channel)
+    public function markAs($mode, $channel)
     {
-        return $this->markAs('network', $channel);
-    }
-
-    public function markAsBlacklist($channel)
-    {
-        return $this->markAs('blacklist', $channel);
-    }
-
-    private function markAs($mode, $channel)
-    {
-
         $channel = str_replace('§', '#', $channel);
 
         $chanlist = Config::get('darchoods::channels.list', null);
         $chanlist = ($chanlist === null ? [] : json_decode($chanlist, true));
 
         $chanlist[$channel] = $mode;
+        if ($mode == 'default') {
+            unset($chanlist[$channel]);
+        }
 
         $chanlist = json_encode($chanlist);
 
         with(new DBConfig)->findOrCreate([
-            'namespace' => 'darchoods',
-            'group'     => 'channels',
-            'item'      => 'list',
+            'environment' => \App::environment(),
+            'namespace'   => 'darchoods',
+            'group'       => 'channels',
+            'item'        => 'list',
         ], [
             'value'     => $chanlist
         ]);
@@ -197,6 +191,4 @@ class ChannelController extends BaseConfigController
 
         return Redirect::back()->withInfo($channel.' has been set as a '.$mode.' channel.');
     }
-
-
 }
