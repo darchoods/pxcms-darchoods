@@ -193,6 +193,16 @@ class HeartbeatController extends BaseController
             return $output;
         });
 
+        $ident = null;
+        if (!Auth::guest()) {
+            $nick = DB::connection('denora')->table('user')->whereAccount(Auth::user()->username)->select('nick', 'ctcpversion')->get();
+
+            if (count($nick) > 0) {
+                $nick = head($nick);
+                $ident = Str::lower(str_replace('"', '', head(explode(' ', $nick->ctcpversion))));
+            }
+        }
+
         $js = 'jQuery(window).ready(function () {
             var clientChart = c3.generate({
                 bindto: \'#clients\',
@@ -203,7 +213,7 @@ class HeartbeatController extends BaseController
                     type: \'donut\'
                 },
                 donut: {
-                    title: "Clients Used",
+                    title: "'.$ident.'".length > 0 ? "You are using '.$ident.'" : "Clients Used",
                     label: {
                         show: false
                     }
