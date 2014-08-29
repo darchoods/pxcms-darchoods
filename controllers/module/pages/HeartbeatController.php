@@ -1,7 +1,9 @@
 <?php namespace Cysha\Modules\Darchoods\Controllers\Module\Pages;
 
-use Cysha\Modules\Darchoods\Controllers\Module\BaseController;
+use Cysha\Modules\Darchoods\Controllers\Module\BaseController as BMC;
 use Cysha\Modules\Darchoods\Helpers\IRC as IRC;
+use Cysha\Modules\Darchoods\Repositories\Irc\User\RepositoryInterface as IrcUserRepository;
+use Cysha\Modules\Darchoods\Repositories\Irc\Server\RepositoryInterface as IrcServerRepository;
 use Illuminate\Support\Collection;
 use Auth;
 use DB;
@@ -11,8 +13,14 @@ use Config;
 use Str;
 use Cache;
 
-class HeartbeatController extends BaseController
+class HeartbeatController extends BMC
 {
+    public function __construct(IrcUserRepository $user, IrcServerRepository $server)
+    {
+        parent::__construct();
+        $this->ircUser = $user;
+        $this->ircServer = $server;
+    }
 
     public function getIndex()
     {
@@ -37,30 +45,26 @@ class HeartbeatController extends BaseController
     public function getCollection()
     {
         try {
-            $dbServers = DB::connection('denora')->table('server')->get();
+            $dbServers = $this->ircServer->getAll();
         } catch (\PDOException $e) {
             Session::flash('error', 'Cannot get server list from IRC.');
             return [];
         }
 
+        if (!count($dbServers)) {
+            return [];
+        }
+// echo \Debug::dump($dbServers, '');die;
         $nicks = [];
         if (!Auth::guest()) {
             $nicks = DB::connection('denora')->table('user')->whereAccount(Auth::user()->username)->select('nick', 'server')->get();
         }
 
-        $serverList = Config::get('darchoods::servers.list', null);
-        $serverList = ($serverList !== null ? json_decode($serverList, true) : []);
-
-        $dbServers = new Collection($dbServers);
-        $dbServers = $dbServers->filter(function (&$server) use ($serverList, $nicks) {
-            if (array_get($serverList, $server->server) == 'blacklist') {
-                return false;
-            }
-
+        $dbServers = array_filter($dbServers, function (&$server) use ($nicks) {
             if (count($nicks)) {
                 foreach ($nicks as $nick) {
-                    if ($server->server == $nick->server) {
-                        $server->location = $nick;
+                    if ($server['name'] == $nick->server) {
+                        $server['location'] = (array) $nick;
                     }
                 }
             }
@@ -68,10 +72,10 @@ class HeartbeatController extends BaseController
             return true;
         });
 
-        $dbServers = $dbServers->sort(function ($x, $y) {
-            if ($x->countrycode == $y->countrycode) {
+        usort($dbServers, function ($x, $y) {
+            if ($x['country']['code'] == $y['country']['code']) {
                 return 0;
-            } elseif ($x->countrycode < $y->countrycode) {
+            } elseif ($x['country']['code'] < $y['country']['code']) {
                 return 1;
             } else {
                 return -1;
@@ -89,33 +93,7 @@ class HeartbeatController extends BaseController
     public function getUserStats()
     {
 
-        $graph = Cache::remember('stats.users', 60, function () {
-            // Query the database for some user stats, and dynamically create a graph using the google api
-            $stats = (array)DB::Connection('denora')->table('stats')->orderBy('id', 'desc')->take(2)->get();
-            if (!count($stats)) {
-                return [];
-            }
-
-            $today = (array)array_shift($stats);
-            $yday  = (array)array_shift($stats);
-
-            $users = [];
-            foreach (['yday', 'today'] as $var) {
-                foreach (range(0, 23) as $i) {
-                    $count = array_get($$var, 'time_'.$i);
-                    if ($count == 0) {
-                        continue;
-                    }
-
-                    $day = array_get($$var, 'day');
-                    $month = array_get($$var, 'month');
-                    $year = array_get($$var, 'year');
-                    $users[date('\n\e\w \D\a\t\e\(Y, m, d, H, i\)', gmmktime($i, 0, 0, $month, $day, $year))] = (int)$count;
-                }
-            }
-
-            return array_splice($users, -24);
-        });
+        $graph = $this->ircServer->getUserCount(24);
 
         $js = 'jQuery(window).ready(function () {
             var userChart = c3.generate({
@@ -154,44 +132,15 @@ class HeartbeatController extends BaseController
     public function getClientStats()
     {
 
-        $clients = Cache::remember('stats.clients', 1, function () {
-            // Query the database for some user stats, and dynamically create a graph using the google api
-            $stats = (array)DB::Connection('denora')->table('ctcp')->where('count', '>', 0)->orderBy('count', 'desc')->get();
-            if (!count($stats)) {
-                return [];
-            }
+        $clients = $this->ircUser->getClientVersions();
+        if (!count($clients)) {
+            return [];
+        }
 
-            // group any clients with the same name, going of the first word in the version tag here
-            $clients = [];
-            foreach ($stats as $client) {
-                $ident = Str::lower(str_replace('"', '', head(explode(' ', $client->version))));
-
-                if (!array_key_exists($ident, $clients)) {
-                    $clients[$ident] = 0;
-                }
-                $clients[$ident] += $client->count;
-            }
-
-            // if any client group has <= $threshold, group them into all
-            $threshold = 1;
-            foreach ($clients as $ident => $count) {
-                if ($count <= $threshold) {
-                    unset($clients[$ident]);
-
-                    if (!array_key_exists('Other', $clients)) {
-                        $clients['Other'] = 0;
-                    }
-                    $clients['Other'] += $count;
-                }
-            }
-
-            $output = [];
-            foreach ($clients as $ident => $count) {
-                $output[] = '["'.$ident.'", '.$count.']';
-            }
-
-            return $output;
-        });
+        $output = [];
+        foreach ($clients as list($ident, $count)) {
+            $output[] = '["'.$ident.'", '.$count.']';
+        }
 
         $ident = null;
         if (!Auth::guest()) {
@@ -209,7 +158,7 @@ class HeartbeatController extends BaseController
                 height: 300,
                 width: 300,
                 data: {
-                    columns: ['.implode(', ', $clients).'],
+                    columns: ['.implode(', ', $output).'],
                     type: \'donut\'
                 },
                 donut: {

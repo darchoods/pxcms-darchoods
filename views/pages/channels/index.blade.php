@@ -1,7 +1,3 @@
-<div class="page-header">
-    <h2>Network Channel Listings</h2>
-</div>
-
 <p>Below is a list of channels that are currently residing on the Darchoods Network. Channels highlighted in green denote Network Specific Channels.</p>
 
 <table width="100%" border="0" class="table table-hover table-bordered">
@@ -16,11 +12,13 @@
 <tbody>
 @if (count($chans))
     @foreach($chans as $chan)
-        <tr class="{{ $chan->extra or '' }}">
-            <td>{{ HTML::link('http://widget.mibbit.com/?settings=3d76ae8aae223a0f553f71b8182f84bb&server=irc.darchoods.net&channel='.str_replace('#', '%23', $chan->channel), $chan->channel) }}</td>
-            <td align="center">{{ $chan->currentusers }}</td>
-            <td align="center">{{ $chan->maxusers }}</td>
-            <td>{{ $chan->topic }}</td>
+        <tr class="{{ array_get($chan, 'extra') }}">
+            <td>
+                {{ HTML::link('http://widget.mibbit.com/?settings=3d76ae8aae223a0f553f71b8182f84bb&server=irc.darchoods.net&channel='.str_replace('#', '%23', array_get($chan, 'name')), array_get($chan, 'name')) }}
+            </td>
+            <td align="center">{{{ array_get($chan, 'stats.current_users') }}}</td>
+            <td align="center">{{{ array_get($chan, 'stats.peak_users') }}}</td>
+            <td>{{ array_get($chan, 'topic.html') }} <span class="pull-right"><small> set by {{ profile(array_get($chan, 'topic.author')) }}</small></span></td>
         </tr>
     @endforeach
 @else

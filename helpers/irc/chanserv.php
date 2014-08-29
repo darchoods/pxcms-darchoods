@@ -3,10 +3,12 @@
 class chanserv extends Atheme
 {
 
-    public function getChannels($nickname = 'x')
+    public function getList($nickname = 'x')
     {
-        $this->addParams('NICKSERV LISTCHANS');
-        return $this->checkResponse($this->doCmd($nickname, $this->getToken()));
+        $this->addParams('chanserv list');
+
+        $return = $this->doCmd($nickname, $this->getToken(), 'atheme.command');
+        return $this->checkResponse($return);
     }
 
 }

@@ -2,6 +2,7 @@
 
 use Cysha\Modules\Darchoods\Controllers\Module\BaseController;
 use Cysha\Modules\Darchoods\Helpers\IRC as IRC;
+use Cysha\Modules\Darchoods\Repositories\Irc\Channel\RepositoryInterface as IrcChannelRepository;
 use Illuminate\Support\Collection;
 use Auth;
 use DB;
@@ -11,6 +12,12 @@ use Config;
 
 class ChannelController extends BaseController
 {
+    public function __construct(IrcChannelRepository $channels)
+    {
+        parent::__construct();
+        $this->repo = $channels;
+
+    }
 
     public function getIndex()
     {
@@ -19,80 +26,36 @@ class ChannelController extends BaseController
 
         return $this->setView('pages.channels.index', [
             'chans' => $this->getCollection(),
-        ]);
+        ])->header('Content-type', 'text/html; charset=utf-8');
     }
 
     public function getCollection()
     {
         try {
-            $dbChans = DB::connection('denora')->table('chan')->get();
+            $dbChans = $this->repo->getAll();
         } catch (\PDOException $e) {
             Session::flash('error', 'Cannot get channel list from IRC.');
             return [];
         }
 
-        $chanList = Config::get('darchoods::channels.list', null);
-        $chanList = ($chanList !== null ? json_decode($chanList, true) : []);
-
-        $dbChans = new Collection($dbChans);
-        $dbChans = $dbChans->filter(function (&$channel) use ($chanList) {
-            if (array_get($chanList, $channel->channel) == 'blacklist') {
+        $dbChans = array_filter($dbChans, function ($chan) {
+            if (array_get($chan, 'stats.current_users', 0) <= 1) {
                 return false;
             }
-
-            $checkModes = chan_modes($channel);
-            if (strstr($checkModes, ' ')) {
-                $checkModes = explode(' ', $checkModes);
-                $checkModes = $checkModes[0];
-            }
-
-            if (strstr($checkModes, 'p')) { //private
-                return false;
-            }
-            if (strstr($checkModes, 's')) { //secret
-                return false;
-            }
-            if (strstr($checkModes, 'O')) { //opers
-                return false;
-            }
-            if ($channel->currentusers <= 1) { // no channel count
-                return false;
-            }
-
-            $channel->modes = $checkModes;
-
-
-            $colorize = new IRC\MircColorParser();
-            $channel->topic = e($channel->topic);
-            $channel->topic = $colorize->colorize($channel->topic);
-            $channel->topic = denora_colorconvert($channel->topic);
-
-            if (!empty($channel->topic) && !empty($channel->topicauthor)) {
-                $channel->topic .= '<span class="pull-right"><small> set by '.profile($channel->topicauthor).'</small></span>';
-            }
-
-            if (array_get($chanList, $channel->channel) == 'network') {
-                $channel->extra = 'success';
-            }
-
-            if (array_get($chanList, $channel->channel) == 'community') {
-                $channel->extra = 'info';
-            }
-
 
             return true;
         });
 
-        $dbChans = $dbChans->sort(function ($x, $y) {
-            if ($x->currentusers == $y->currentusers) {
+        usort($dbChans, function ($x, $y) {
+            if (array_get($x, 'stats.current_users', 0) == array_get($y, 'stats.current_users', 0)) {
                 return 0;
-            } elseif ($x->currentusers < $y->currentusers) {
+            } elseif (array_get($x, 'stats.current_users', 0) < array_get($y, 'stats.current_users', 0)) {
                 return 1;
             } else {
                 return -1;
             }
         });
-// echo \Debug::dump($dbChans, '');die;
+
         return $dbChans;
     }
 

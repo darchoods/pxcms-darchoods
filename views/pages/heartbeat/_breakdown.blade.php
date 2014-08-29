@@ -6,7 +6,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <h5>Users on the network over the last 24 hours</h5>
+        <h5>Users on the network over the last 24 hours <small>(Peak Count: {{ $userPeak }})</small></h5>
         <div id="users"></div>
     </div>
     <div class="col-md-6">

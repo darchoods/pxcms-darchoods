@@ -1,9 +1,9 @@
 <?php namespace Cysha\Modules\Darchoods\Controllers\Module;
 
-use Cysha\Modules\Core\Controllers\BaseModuleController as CoreController;
+use Cysha\Modules\Core\Controllers\BaseModuleController as BMC;
 use URL;
 
-class BaseController extends CoreController
+class BaseController extends BMC
 {
 
     public function __construct()
@@ -14,6 +14,9 @@ class BaseController extends CoreController
 
     public function setDecorativeMode()
     {
+        if (!is_object($this->objTheme)) {
+            return false;
+        }
         $this->objTheme->set('mode', 'decorative');
     }
 }

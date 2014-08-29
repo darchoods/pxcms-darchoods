@@ -40,6 +40,6 @@ Route::get('/', ['as' => 'pxcms.pages.home', 'uses' => $namespace.'\Pages\NewsCo
 
 // Route::get('qdb', array('as' => 'darchoods.qdb.index', 'uses' => $namespace.'\PagesController@getNews'));
 Route::get('heartbeat', array('as' => 'darchoods.pages.heartbeat', 'uses' => $namespace.'\Pages\HeartbeatController@getIndex'));
+Route::get('heartbeat/population.csv', array('uses' => $namespace.'\Pages\HeartbeatController@getCountryStats'));
 Route::get('channels', array('as' => 'darchoods.pages.channels', 'uses' => $namespace.'\Pages\ChannelController@getIndex'));
-// Route::get('api', array('as' => 'darchoods.pages.apidoc', 'uses' => $namespace.'\PagesController@viewApiDoc'));
-// Route::post('api.php', array('as' => 'darchoods.pages.api', 'uses' => $namespace.'\PagesController@viewApi'));
+Route::get('api', array('as' => 'darchoods.pages.apidoc', 'uses' => $namespace.'\Pages\ApiController@getApi'));

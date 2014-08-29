@@ -1,7 +1,7 @@
 <?php
 
 
-Route::group(['prefix' => 'admin'], function () use ($namespace) {
+Route::group(array('prefix' => Config::get('core::routes.paths.admin')), function () use ($namespace) {
     $namespace .= '\Admin';
 
     Route::group(['prefix' => 'channels'], function () use ($namespace) {
