@@ -20,6 +20,8 @@ class AuthController extends BaseController
         if (!Auth::guest() && (Auth::user()->isAdmin() && Cookie::get('darchoods_token', null) !== null)) {
             return Redirect::route('pxcms.user.dashboard');
         }
+        $this->setTitle('Sign In');
+        $this->setDecorativeMode(); // makes the page get a funky wrapper on DH only
 
         return $this->setView('partials.core.login', array(
         ), 'theme');
@@ -61,7 +63,7 @@ class AuthController extends BaseController
         Auth::login($objUser, false);
 
         return Redirect::intended(URL::route(Config::get('auth::user.redirect_to')))
-            ->withInfo(Lang::get('darchoods::auth.user.welcome', [$objUser->username]));
+            ->withInfo(Lang::get('darchoods::auth.user.welcome', ['name' => $objUser->name]));
     }
 
     public function getLogout()
