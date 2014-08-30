@@ -6,7 +6,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <h5>Users on the network over the last 24 hours <small>(Peak Count: {{ $userPeak }})</small></h5>
+        <h5>Users on the network over the last 24 hours <small>(Peak Count: {{ array_get($userPeak, 'val') }} on {{ date_carbon(array_get($userPeak, 'time'), 'd-m-Y') }})</small></h5>
         <div id="users"></div>
     </div>
     <div class="col-md-6">

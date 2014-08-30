@@ -14,10 +14,14 @@
     @foreach($chans as $chan)
         <tr class="{{ array_get($chan, 'extra') }}">
             <td>
-                {{ HTML::link('http://widget.mibbit.com/?settings=3d76ae8aae223a0f553f71b8182f84bb&server=irc.darchoods.net&channel='.str_replace('#', '%23', array_get($chan, 'name')), array_get($chan, 'name')) }}
+                {{ array_get($chan, 'name') }}
             </td>
             <td align="center">{{{ array_get($chan, 'stats.current_users') }}}</td>
-            <td align="center">{{{ array_get($chan, 'stats.peak_users') }}}</td>
+            <td align="center">
+                <span data-toggle="tooltip" data-title="Peak hit on {{ date_carbon(array_get($chan, 'stats.peak_user_time'), 'd-m-Y') }}">
+                    {{{ array_get($chan, 'stats.peak_users') }}}
+                </span>
+            </td>
             <td>{{ array_get($chan, 'topic.html') }} <span class="pull-right"><small> set by {{ profile(array_get($chan, 'topic.author')) }}</small></span></td>
         </tr>
     @endforeach
