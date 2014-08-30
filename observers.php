@@ -63,3 +63,17 @@ Event::listen('darchoods.user.list', function () {
 
     Cache::forever('darchoods.user.list', $usernames);
 });
+
+
+
+App::missing(function ($exception) {
+    $objTheme = Theme::uses('darchoods-theme')->layout('col-1');
+
+    return $objTheme->scope('partials.theme.errors.404')->render(404);
+});
+
+App::error(function (Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException $exception) {
+    $objTheme = Theme::uses('darchoods-theme')->layout('col-1');
+
+    return $objTheme->scope('partials.theme.errors.404')->render(403);
+});
