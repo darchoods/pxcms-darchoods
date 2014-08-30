@@ -36,7 +36,7 @@ class AuthController extends BaseController
 
         // if they are incorrect, throw them back
         if ($response[0] !== true) {
-            return Redirect::route('pxcms.user.login')->withError(Lang::get('core::auth.user.notfound'));
+            return Redirect::route('pxcms.user.login')->withError(Lang::get('auth::auth.user.notfound'));
         }
 
         // throw the token into a session
@@ -56,7 +56,7 @@ class AuthController extends BaseController
         \Event::fire('darchoods.user.list');
 
         if (!count($objUser)) {
-            return Redirect::route('pxcms.user.login')->withError(Lang::get('core::auth.user.notfound'));
+            return Redirect::route('pxcms.user.login')->withError(Lang::get('auth::auth.user.notfound'));
         }
 
         // actually log em in
@@ -95,15 +95,15 @@ class AuthController extends BaseController
     public function getActivate($code)
     {
         if ($user->isActive()) {
-            return Redirect::to('/')->withWarning(Lang::get('core::auth.user.alreadyactive'));
+            return Redirect::to('/')->withWarning(Lang::get('auth::auth.user.alreadyactive'));
         }
 
         if ($user->activate($code)) {
             Auth::login($user);
 
-            return Redirect::route('pxcms.user.dashboard')->withInfo(Lang::get('core::auth.user.activated'));
+            return Redirect::route('pxcms.user.dashboard')->withInfo(Lang::get('auth::auth.user.activated'));
         } else {
-            return Redirect::to('/')->withError(Lang::get('core::auth.user.invalidkey'));
+            return Redirect::to('/')->withError(Lang::get('auth::auth.user.invalidkey'));
         }
     }
 
