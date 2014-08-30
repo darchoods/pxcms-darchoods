@@ -9,10 +9,10 @@ Route::get('login', array('as' => 'pxcms.user.login', 'uses' => $namespace.'\Aut
 Route::post('login', $namespace.'\AuthController@postLogin');
 Route::get('logout', array('as' => 'pxcms.user.logout', 'uses' => $namespace.'\AuthController@getLogout'));
 
-// Register User
-Route::get('register', array('as' => 'pxcms.user.register', 'uses' => $namespace.'\AuthController@getRegister'));
-Route::post('register', $namespace.'\AuthController@postRegister');
-Route::get('registered', array('as' => 'pxcms.user.registered', 'uses' => $namespace.'\AuthController@getRegistered'));
+// Register User - need to swap to irc implementation at some point
+// Route::get('register', array('as' => 'pxcms.user.register', 'uses' => $namespace.'\AuthController@getRegister'));
+// Route::post('register', $namespace.'\AuthController@postRegister');
+// Route::get('registered', array('as' => 'pxcms.user.registered', 'uses' => $namespace.'\AuthController@getRegistered'));
 
 // User Control Panel
 Route::group(array('prefix' => Config::get('core::routes.paths.user')), function () use ($namespace) {

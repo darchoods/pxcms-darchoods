@@ -2,10 +2,6 @@
 
 function getUserInfo($username = '.')
 {
-    //if (Session::has('userInfo') && Session::get('userInfo', null) !== null) {
-    //    return Session::get('userInfo');
-    //}
-
     if ($username == '.') {
         $username = Auth::user()->username;
     }
@@ -14,7 +10,6 @@ function getUserInfo($username = '.')
     if (array_get($info, '0', false) == false) {
         return [];
     }
-    // echo \Debug::dump($info, $username);
 
     $info = explode("\n", $info[1]);
 
@@ -47,6 +42,7 @@ function profile($username)
     if (empty($username)) {
         return 'Unknown';
     }
+    return $username; // no profile page yet
 
     return Cache::remember('users.'.$username, 60, function () use ($username) {
         $authModel = Config::get('auth.model');
