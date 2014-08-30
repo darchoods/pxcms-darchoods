@@ -4,6 +4,7 @@ use Cysha\Modules\Darchoods\Controllers\Module\BaseController as BMC;
 use Cysha\Modules\Darchoods\Helpers\IRC as IRC;
 use Cysha\Modules\Darchoods\Repositories\Irc\User\RepositoryInterface as IrcUserRepository;
 use Cysha\Modules\Darchoods\Repositories\Irc\Server\RepositoryInterface as IrcServerRepository;
+use Cysha\Modules\Darchoods\Repositories\Irc\Stat\RepositoryInterface as IrcStatRepository;
 use Illuminate\Support\Collection;
 use Auth;
 use DB;
@@ -15,11 +16,12 @@ use Cache;
 
 class HeartbeatController extends BMC
 {
-    public function __construct(IrcUserRepository $user, IrcServerRepository $server)
+    public function __construct(IrcUserRepository $user, IrcServerRepository $server, IrcStatRepository $stats)
     {
         parent::__construct();
         $this->ircUser = $user;
         $this->ircServer = $server;
+        $this->ircStats = $stats;
     }
 
     public function getIndex()
@@ -39,6 +41,7 @@ class HeartbeatController extends BMC
             'serverList'  => $this->getCollection(),
             'userStats'   => $this->getUserStats(),
             'clientStats' => $this->getClientStats(),
+            'userPeak'    => $this->ircStats->getUserPeak(),
         ]);
     }
 
@@ -54,7 +57,7 @@ class HeartbeatController extends BMC
         if (!count($dbServers)) {
             return [];
         }
-// echo \Debug::dump($dbServers, '');die;
+
         $nicks = [];
         if (!Auth::guest()) {
             $nicks = DB::connection('denora')->table('user')->whereAccount(Auth::user()->username)->select('nick', 'server')->get();
@@ -93,7 +96,7 @@ class HeartbeatController extends BMC
     public function getUserStats()
     {
 
-        $graph = $this->ircServer->getUserCount(24);
+        $graph = $this->ircStats->getUserCount(24);
 
         $js = 'jQuery(window).ready(function () {
             var userChart = c3.generate({
