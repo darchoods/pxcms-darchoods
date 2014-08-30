@@ -141,7 +141,8 @@ class HeartbeatController extends BMC
         }
 
         $output = [];
-        foreach ($clients as list($ident, $count)) {
+        foreach ($clients as $client) {
+            list($ident, $count) = $client;
             $output[] = '["'.$ident.'", '.$count.']';
         }
 
