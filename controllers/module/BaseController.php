@@ -5,6 +5,7 @@ use URL;
 
 class BaseController extends BMC
 {
+    public $layout = 'cols-2-right';
 
     public function __construct()
     {
