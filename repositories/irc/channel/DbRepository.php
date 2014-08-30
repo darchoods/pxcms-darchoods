@@ -50,8 +50,13 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
         if (!count($channel)) {
             return false;
         }
+        $channel = $channel->first();
 
-        return $channel->first()->transform();
+        if (strstr($channel->modes, 'O') !== false) { return -1; }
+        if (strstr($channel->modes, 's') !== false) { return -1; }
+        if (strstr($channel->modes, 'p') !== false) { return -1; }
+
+        return $channel->transform();
     }
 
     public function getChannelUsers($channel)
