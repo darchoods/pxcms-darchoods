@@ -13,31 +13,33 @@ class ServiceProvider extends BaseServiceProvider
         \Config::set('auth::user.redirect_to', 'pxcms.user.dashboard');
 
         //$this->registerOtherPackages();
-        $this->registerIrcUserRepository();
-        $this->registerIrcChannelRepository();
-        $this->registerIrcServerRepository();
+        $this->registerRepositories();
+        $this->registerViewComposers();
     }
 
 
-    public function registerIrcUserRepository()
+    public function registerRepositories()
     {
         $this->app->bind('Cysha\Modules\Darchoods\Repositories\Irc\User\RepositoryInterface', function ($app) {
             return new Module\Repositories\Irc\User\DbRepository(new Module\Models\Irc\User);
         });
-    }
 
-    public function registerIrcChannelRepository()
-    {
         $this->app->bind('Cysha\Modules\Darchoods\Repositories\Irc\Channel\RepositoryInterface', function ($app) {
             return new Module\Repositories\Irc\Channel\DbRepository(new Module\Models\Irc\Channel);
         });
-    }
 
-    public function registerIrcServerRepository()
-    {
         $this->app->bind('Cysha\Modules\Darchoods\Repositories\Irc\Server\RepositoryInterface', function ($app) {
             return new Module\Repositories\Irc\Server\DbRepository(new Module\Models\Irc\Server);
         });
+
+        $this->app->bind('Cysha\Modules\Darchoods\Repositories\Irc\Stat\RepositoryInterface', function ($app) {
+            return new Module\Repositories\Irc\Stat\DbRepository(new Module\Models\Irc\Stat, new Module\Models\Irc\Maxvalue);
+        });
+    }
+
+    public function registerViewComposers()
+    {
+        $this->app->make('view')->composer('theme.*::views/partials.theme.sidebar-*', '\Cysha\Modules\Darchoods\Composers\Sidebar');
     }
 
     private function registerInstallCommand()
