@@ -42,14 +42,6 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->make('view')->composer('theme.*::views/partials.theme.sidebar-*', '\Cysha\Modules\Darchoods\Composers\Sidebar');
     }
 
-    private function registerInstallCommand()
-    {
-        $this->app['cms.modules.darchoods:install'] = $this->app->share(function () {
-            return new InstallCommand($this->app);
-        });
-        $this->commands('cms.modules.auth:install');
-    }
-
     private function registerOtherPackages()
     {
         $serviceProviders = [
