@@ -15,3 +15,11 @@ Route::api(['version' => 'v1', 'prefix' => \Config::get('core::routes.paths.api'
     });
 
 });
+
+Route::group(['prefix' => \Config::get('core::routes.paths.api', 'api')], function () use ($namespace) {
+    $namespace .= '\Module';
+
+    Route::group(['prefix' => 'irc'], function () use ($namespace) {
+        Route::get('/', ['as' => 'darchoods.pages.apidoc', 'uses' => 'Cysha\Modules\Darchoods\Controllers\Module\Pages\ApiController@getApi']);
+    });
+});
