@@ -20,21 +20,25 @@ class ServiceProvider extends BaseServiceProvider
 
     public function registerRepositories()
     {
-        $this->app->bind('Cysha\Modules\Darchoods\Repositories\Irc\User\RepositoryInterface', function ($app) {
-            return new Module\Repositories\Irc\User\DbRepository(new Module\Models\Irc\User);
-        });
+        $this->app->bind(
+            'Cysha\Modules\Darchoods\Repositories\Irc\User\RepositoryInterface',
+            'Cysha\Modules\Darchoods\Repositories\Irc\User\DbRepository'
+        );
 
-        $this->app->bind('Cysha\Modules\Darchoods\Repositories\Irc\Channel\RepositoryInterface', function ($app) {
-            return new Module\Repositories\Irc\Channel\DbRepository(new Module\Models\Irc\Channel);
-        });
+        $this->app->bind(
+            'Cysha\Modules\Darchoods\Repositories\Irc\Channel\RepositoryInterface',
+            'Cysha\Modules\Darchoods\Repositories\Irc\Channel\DbRepository'
+        );
 
-        $this->app->bind('Cysha\Modules\Darchoods\Repositories\Irc\Server\RepositoryInterface', function ($app) {
-            return new Module\Repositories\Irc\Server\DbRepository(new Module\Models\Irc\Server);
-        });
+        $this->app->bind(
+            'Cysha\Modules\Darchoods\Repositories\Irc\Server\RepositoryInterface',
+            'Cysha\Modules\Darchoods\Repositories\Irc\Server\DbRepository'
+        );
 
-        $this->app->bind('Cysha\Modules\Darchoods\Repositories\Irc\Stat\RepositoryInterface', function ($app) {
-            return new Module\Repositories\Irc\Stat\DbRepository(new Module\Models\Irc\Stat, new Module\Models\Irc\Maxvalue);
-        });
+        $this->app->bind(
+            'Cysha\Modules\Darchoods\Repositories\Irc\Stat\RepositoryInterface',
+            'Cysha\Modules\Darchoods\Repositories\Irc\Stat\DbRepository'
+        );
     }
 
     public function registerViewComposers()
