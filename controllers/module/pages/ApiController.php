@@ -16,22 +16,23 @@ class ApiController extends BaseController
     {
         $this->setTitle('IRC Api Documentation');
 
+        $route = '/api/irc';
         $api = [
             [
                 'method'      => 'GET',
-                'url'         => '/api/irc/servers',
+                'url'         => $route.'/servers',
                 'description' => 'Get server information from the network.',
                 'vars'        => [],
             ],
             [
                 'method'      => 'GET',
-                'url'         => '/api/irc/channels',
+                'url'         => $route.'/channels',
                 'description' => 'Get a /list for the network.',
                 'vars'        => [],
             ],
             [
                 'method'      => 'POST',
-                'url'         => '/api/irc/channel/view',
+                'url'         => $route.'/channel/view',
                 'description' => 'Get all data on a channel.',
                 'vars'        => [[
                     'var'   => 'channel',
@@ -41,7 +42,7 @@ class ApiController extends BaseController
             ],
             [
                 'method'      => 'POST',
-                'url'         => '/api/irc/channel/users',
+                'url'         => $route.'/channel/users',
                 'description' => 'Get all user data on a channel.',
                 'vars'        => [[
                     'var'   => 'channel',
@@ -51,10 +52,11 @@ class ApiController extends BaseController
             ]
         ];
 
-
+        $comment = 'Using the API you can access various statistics about the IRC Network. This api will return JSON regardless of headers set, this may change in the future if there is enough request for it.';
         return $this->setView('pages.api.index', [
-            'api' => $api,
-        ], 'module');
+            'api'     => $api,
+            'comment' => $comment,
+        ], 'module:core');
     }
 
 }

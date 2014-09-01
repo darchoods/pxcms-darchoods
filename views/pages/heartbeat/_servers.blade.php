@@ -8,7 +8,7 @@
 @foreach ($serverList as $model)
     <tr>
         <td>
-            {{ (array_get($model, 'status') ? '<div class="label label-success">Online</div>' : '<div class="label label-danger">offline</div>') }} {{ array_get($model, 'name') }} :6697
+            {{ (array_get($model, 'status', false) === true ? '<div class="label label-success">Online</div>' : '<div class="label label-danger">offline</div>') }} {{ array_get($model, 'name') }} :6697
             @if (array_get($model, 'location', null) !== null)
             <span data-toggle="tooltip" title="You have a client connected to this node ({{ array_get($model, 'location.nick') }})"><i class="fa fa-map-marker"></i></span>
             @endif

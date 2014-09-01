@@ -8,7 +8,7 @@ class Server extends BaseModel
     {
         return [
             'name'   => (string) $this->server,
-            'status' => (bool) $this->online == 'Y' ? true : false,
+            'status' => (bool) ($this->online == 'Y' ? true : false),
             'uptime' => (int) $this->uptime,
             'users'  => [
                 'current' => (int) $this->currentusers,
