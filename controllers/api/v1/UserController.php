@@ -40,10 +40,39 @@ class UserController extends BAC
             return $this->sendError('No username given.');
         }
 
-        $data = [];
+        // set default order for the array
+        $data = ['user' => [], 'stats' => [], 'channels' => []];
+
+        // get user info
         $data['user'] = $this->ircUser->getUserByNick($username);
         unset($data['user']['modes']);
+
+        // grab the users channels
         $data['channels'] = $this->ircChannel->getUsersChannels($username);
+
+        // total up user mode stats
+        $modeCount = ['q' => 0, 'a' => 0, 'o' => 0, 'h' => 0, 'v' => 0];
+        if (count($data['channels']) > 0) {
+            foreach (array_get($data, 'channels') as $channel) {
+                $modes = $channel[key($channel)];
+
+                if (empty($modes)) {
+                    continue;
+                }
+
+                $modes = str_split($modes);
+
+                foreach ($modes as $mode) {
+                    $modeCount[$mode]++;
+                }
+            }
+        }
+
+        // add the stats to the array
+        $data['stats'] = [
+            'channel_count' => count($data['channels']),
+            'mode_counts' => $modeCount,
+        ];
 
         return $this->sendResponse('ok', 200, $data);
     }
