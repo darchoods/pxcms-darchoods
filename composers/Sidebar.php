@@ -5,7 +5,7 @@ class Sidebar
 
     public function compose($view)
     {
-        $users = with(\App::make('Cysha\Modules\Darchoods\Repositories\Irc\Channel\RepositoryInterface'))->getChannelUsers('#darchoods');
+        $users = with(\App::make('Cysha\Modules\Darchoods\Repositories\Irc\Channel\RepositoryInterface'))->getUsersInChannel('#darchoods');
 
         $output = [];
         foreach ($users as $user) {

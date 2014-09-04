@@ -2,7 +2,7 @@
 
 class User extends BaseModel
 {
-    public $table = 'chan';
+    public $table = 'user';
 
     public function transform()
     {
@@ -12,7 +12,7 @@ class User extends BaseModel
             'realname'     => (string) $this->realname,
             'mask'         => (string) $this->hiddenhostname,
             'modes'        => (string) $this->modes,
-            'registered'   => (bool) (empty($this->account) ? false : true),
+            'identified'   => (bool) (empty($this->account) ? false : true),
             'away'         => (bool) ($this->away == 'Y' ? true : false),
             'away_msg'     => ($this->away == 'Y' ? (string) $this->away_msg : null),
             'country_code' => (string) $this->countrycode,

@@ -46,30 +46,4 @@ class ChannelController extends BAC
         ]);
     }
 
-    public function postChannelUsers()
-    {
-        $channelName = Input::get('channel', false);
-        if ($channelName === false) {
-            return $this->sendError('Channel not found.');
-        }
-
-        $channel = $this->repo->getChannel($channelName);
-        if ($channel === false) {
-            return $this->sendError('Channel not found.');
-        }
-
-        if ($channel == -1) {
-            return $this->sendError('Channel is set to Private or Secret. Cannot obtain information.');
-        }
-
-        $users = $this->repo->getChannelUsers($channelName);
-        if ($users === false) {
-            return $this->sendError('Channel not found.');
-        }
-
-        return $this->sendResponse('ok', 200, [
-            'count' => count($users),
-            'users' => $users,
-        ]);
-    }
 }

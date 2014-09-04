@@ -9,9 +9,10 @@ use Config;
 
 class DbRepository extends BaseDbRepository implements RepositoryInterface
 {
-    public function __construct(Irc\Channel $repo)
+    public function __construct(Irc\Channel $channel, Irc\User $user)
     {
-        $this->model = $repo;
+        $this->model = $channel;
+        $this->user = $user;
     }
 
     public function getAll(array $with = [])
@@ -59,7 +60,44 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
         return $channel->transform();
     }
 
-    public function getChannelUsers($channel)
+    public function getUsersChannels($nick)
+    {
+        $nick = $this->user->whereNick($nick)->get()->first();
+        if ($nick === null) {
+            return [];
+        }
+
+        $chans = \DB::connection('denora')->select(
+            'SELECT chan.channel, ison.*
+                FROM user, ison, chan
+                WHERE user.nick = "'.$nick->nick.'"
+                    AND ison.nickid = user.nickid
+                    AND ison.chanid = chan.chanid'
+        );
+
+        return array_map(function ($chan) {
+            $mode = null;
+            if ($chan->mode_lq == 'Y') {
+                $mode .= 'q';
+            }
+            if ($chan->mode_la == 'Y') {
+                $mode .= 'a';
+            }
+            if ($chan->mode_lo == 'Y') {
+                $mode .= 'o';
+            }
+            if ($chan->mode_lh == 'Y') {
+                $mode .= 'h';
+            }
+            if ($chan->mode_lv == 'Y') {
+                $mode .= 'v';
+            }
+
+            return [$chan->channel => $mode];
+        }, $chans);
+    }
+
+    public function getUsersInChannel($channel)
     {
         $users = \DB::connection('denora')->select(
             'SELECT user.mode_lh AS helper, user.*, ison.*, server.uline

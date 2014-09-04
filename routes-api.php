@@ -6,12 +6,16 @@ Route::api(['version' => 'v1', 'prefix' => \Config::get('core::routes.paths.api'
     Route::group(['prefix' => 'irc'], function () use ($namespace) {
 
         Route::group(['prefix' => 'channel'], function () use ($namespace) {
-            Route::post('users', ['uses' => $namespace.'\ChannelController@postChannelUsers']);
-            Route::post('view', ['uses' => $namespace.'\ChannelController@postChannelView']);
+            Route::post('view', $namespace.'\ChannelController@postChannelView');
+            Route::post('users', $namespace.'\UserController@postChannelView');
         });
 
-        Route::get('servers', ['uses' => $namespace.'\ServerController@getServers']);
-        Route::get('channels', ['uses' => $namespace.'\ChannelController@getChannels']);
+        Route::group(['prefix' => 'user'], function () use ($namespace) {
+            Route::post('view', $namespace.'\UserController@postUserView');
+        });
+
+        Route::get('servers', $namespace.'\ServerController@getServers');
+        Route::get('channels', $namespace.'\ChannelController@getChannels');
     });
 
 });

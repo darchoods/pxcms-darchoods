@@ -8,14 +8,20 @@ use Str;
 
 class DbRepository extends BaseDbRepository implements RepositoryInterface
 {
-    public function __construct(Irc\User $repo)
+    public function __construct(Irc\User $model)
     {
+        $this->model = $model;
     }
 
 
-    public function getByAccountName($nick)
+    public function getUserByNick($username)
     {
+        $user = $this->model->whereNick($username)->get()->first();
+        if ($user === null) {
+            return [];
+        }
 
+        return $user->transform();
     }
 
     public function getClientVersions()

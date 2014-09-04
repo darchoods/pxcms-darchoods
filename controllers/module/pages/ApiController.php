@@ -21,7 +21,7 @@ class ApiController extends BaseController
             [
                 'method'      => 'GET',
                 'url'         => $route.'/servers',
-                'description' => 'Get server information from the network.',
+                'description' => 'Gets a network map.',
                 'vars'        => [],
             ],
             [
@@ -33,7 +33,7 @@ class ApiController extends BaseController
             [
                 'method'      => 'POST',
                 'url'         => $route.'/channel/view',
-                'description' => 'Get all data on a channel.',
+                'description' => 'Gets data about a channel.',
                 'vars'        => [[
                     'var'   => 'channel',
                     'value' => 'eg #darchoods',
@@ -43,11 +43,21 @@ class ApiController extends BaseController
             [
                 'method'      => 'POST',
                 'url'         => $route.'/channel/users',
-                'description' => 'Get all user data on a channel.',
+                'description' => 'Gets the userlist from #channel.',
                 'vars'        => [[
                     'var'   => 'channel',
                     'value' => 'eg #darchoods',
                     'use'   => 'Channel Name.'
+                ]],
+            ],
+            [
+                'method'      => 'POST',
+                'url'         => $route.'/user/view',
+                'description' => 'Gather information about a username on the network.',
+                'vars'        => [[
+                    'var'   => 'username',
+                    'value' => '',
+                    'use'   => 'User to gain information about.'
                 ]],
             ]
         ];
