@@ -64,7 +64,7 @@ class UserController extends BAC
             return $this->sendError('Channel is set to Private or Secret. Cannot obtain information.');
         }
 
-        $users = $this->repo->getUsersInChannel($channelName);
+        $users = $this->ircChannel->getUsersInChannel($channelName);
         if ($users === false) {
             return $this->sendError('Channel not found.');
         }

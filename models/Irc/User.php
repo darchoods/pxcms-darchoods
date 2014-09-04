@@ -6,6 +6,11 @@ class User extends BaseModel
 
     public function transform()
     {
+
+        if ($this->hiddenhostname == 'services.darkscience.net') {
+            $this->ctcpversion = 'atheme';
+        }
+
         return [
             'nick'         => (string) $this->nick,
             'username'     => (string) $this->username,

@@ -131,14 +131,19 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
                 $mode .= 'v';
             }
 
+            if ($user->hiddenhostname == 'services.darkscience.net') {
+                $user->ctcpversion = 'atheme';
+            }
+
             return [
                 'nick'         => (string) $user->nick,
                 'username'     => (string) $user->username,
                 'realname'     => (string) $user->realname,
                 'mask'         => (string) $user->hiddenhostname,
                 'modes'        => (string) $mode,
-                'registered'   => (bool) (empty($user->account) ? false : true),
-                'away'         => (bool) ($user->away == 'Y' ? true : false),
+                'online'       => (bool) ($user->online !== 'Y' ? false : true),
+                'identified'   => (bool) ($user->online !== 'Y' || empty($user->account) ? false : true),
+                'away'         => (bool) ($user->away === 'Y' ? true : false),
                 'away_msg'     => ($user->away == 'Y' ? (string) $user->awaymsg : null),
                 'country_code' => (string) $user->countrycode,
                 'country'      => (string) $user->country,
