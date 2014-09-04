@@ -75,7 +75,8 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
                     AND ison.chanid = chan.chanid'
         );
 
-        return array_map(function ($chan) {
+        $channels = [];
+        foreach ($chans as $chan) {
             $mode = null;
             if ($chan->mode_lq == 'Y') {
                 $mode .= 'q';
@@ -93,8 +94,10 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
                 $mode .= 'v';
             }
 
-            return [$chan->channel => $mode];
-        }, $chans);
+            $channels[$chan->channel] = $mode;
+        }
+
+        return $channels;
     }
 
     public function getUsersInChannel($channel)

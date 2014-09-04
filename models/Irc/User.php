@@ -17,12 +17,18 @@ class User extends BaseModel
             'realname'     => (string) $this->realname,
             'mask'         => (string) $this->hiddenhostname,
             'modes'        => (string) $this->modes,
+            'userstring'   => (string) $this->username.'!'.$this->realname.'@'.$this->hiddenhostname,
+
             'online'       => (bool) ($this->online !== 'Y' ? false : true),
+            'online_last'  => $this->lastquit ? strtotime($this->lastquit) : null,
             'identified'   => (bool) ($this->online !== 'Y' || empty($this->account) ? false : true),
+
             'away'         => (bool) ($this->away === 'Y' ? true : false),
             'away_msg'     => ($this->away == 'Y' ? (string) $this->away_msg : null),
+
             'country_code' => (string) $this->countrycode,
             'country'      => (string) $this->country,
+
             'version'      => (string) $this->ctcpversion,
             'server'       => (string) $this->server,
         ];

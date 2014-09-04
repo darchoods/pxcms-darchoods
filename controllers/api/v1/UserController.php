@@ -53,9 +53,7 @@ class UserController extends BAC
         // total up user mode stats
         $modeCount = ['q' => 0, 'a' => 0, 'o' => 0, 'h' => 0, 'v' => 0];
         if (count($data['channels']) > 0) {
-            foreach (array_get($data, 'channels') as $channel) {
-                $modes = $channel[key($channel)];
-
+            foreach (array_get($data, 'channels') as $modes) {
                 if (empty($modes)) {
                     continue;
                 }
