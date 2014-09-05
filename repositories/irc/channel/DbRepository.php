@@ -67,13 +67,12 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
             return [];
         }
 
-        $chans = \DB::connection('denora')->select(
-            'SELECT chan.channel, ison.*
-                FROM user, ison, chan
-                WHERE user.nick = "'.$nick->nick.'"
-                    AND ison.nickid = user.nickid
-                    AND ison.chanid = chan.chanid'
-        );
+        $chans = \DB::connection('denora')->table('user')
+            ->where('user.nick', '=', $nick->nick)
+            ->join('ison', 'ison.nickid', '=', 'user.nickid')
+            ->join('chan', 'ison.chanid', '=', 'chan.chanid')
+            ->select('chan.channel', 'ison.*')
+            ->get();
 
         $channels = [];
         foreach ($chans as $chan) {
