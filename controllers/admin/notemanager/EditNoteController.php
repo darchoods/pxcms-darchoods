@@ -10,8 +10,10 @@ class EditNoteController extends BaseNoteManagerController
 
     public function getEdit(Darchoods\Models\Note $obj)
     {
+        $content = $obj->getOriginal('content');
+        $content = str_replace('<br />', '', nl2br($content));
 
-        Former::populateField('content', $obj->getOriginal('content'));
+        Former::populateField('content', $content);
         Former::populateField('title', $obj->getOriginal('title'));
 
         return $this->setView('notes.admin.form');
