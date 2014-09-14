@@ -9,12 +9,10 @@ class NewsController extends BaseController
     public function __construct()
     {
         parent::__construct();
-        $this->objTheme->set('mode', 'basic');
     }
 
     public function getNews()
     {
-        echo \Debug::dump($this->layout, '');
         $posts = News\Models\News::getCurrent(5);
 
         return $this->setView('news.homepage', [
