@@ -3,6 +3,7 @@
 use Cysha\Modules\Darchoods\Helpers\IRC as IRC;
 use Cysha\Modules\Core\Models\DBConfig;
 use URL;
+use Auth;
 
 class NotesController extends BaseAdminController
 {
@@ -66,19 +67,19 @@ class NotesController extends BaseAdminController
                 'filtering' => true,
                 'width'     => '10%',
             ],
-            'title' => [
-                'th'        => 'Title',
-                'tr'        => function ($model) {
-                    return \Str::limit($model->content, 100);
-                },
-                'sorting'   => true,
-                'filtering' => true,
-                'width'     => '10%',
-            ],
             'created_at' => [
                 'th'        => 'Date Created',
                 'tr'        => function ($model) {
                     return date_carbon($model->created_at, 'd/m/Y H:i:s');
+                },
+                'th-class'  => 'hidden-xs hidden-sm',
+                'tr-class'  => 'hidden-xs hidden-sm',
+                'width'     => '15%',
+            ],
+            'updated_at' => [
+                'th'        => 'Date updated',
+                'tr'        => function ($model) {
+                    return date_carbon($model->updated_at, 'd/m/Y H:i:s');
                 },
                 'th-class'  => 'hidden-xs hidden-sm',
                 'tr-class'  => 'hidden-xs hidden-sm',
