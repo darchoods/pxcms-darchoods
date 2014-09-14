@@ -13,7 +13,7 @@ class NotesController extends BaseAdminController
     {
         parent::__construct();
 
-        $this->objTheme->setTitle('<i class="glyphicon glyphicon-list-alt"></i> Notes Manager');
+        $this->objTheme->setTitle('<i class="glyphicon glyphicon-book"></i> Notes Manager');
         $this->objTheme->breadcrumb()->add('Notes Manager', URL::route('admin.notes.index'));
         $this->assets();
 
@@ -90,16 +90,17 @@ class NotesController extends BaseAdminController
                 'tr' => function ($model) {
                     return [[
                         'btn-text'  => 'Edit',
-                        'btn-link'  => ( Auth::user()->can('admin.news.edit') ? sprintf('/admin/news/%d/edit', $model->id) : '#' ),
-                        'btn-class' => ( Auth::user()->can('admin.news.edit') ? 'btn btn-warning btn-sm btn-labeled' : 'btn btn-warning btn-sm btn-labeled disabled' ),
+                        'btn-link'  => ( Auth::user()->can('admin.notes.edit') ? sprintf('/admin/notes/%d/edit', $model->id) : '#' ),
+                        'btn-class' => ( Auth::user()->can('admin.notes.edit') ? 'btn btn-warning btn-sm btn-labeled' : 'btn btn-warning btn-sm btn-labeled disabled' ),
                         'btn-icon'  => 'fa fa-pencil'
                     ],[
                         'btn-text'  => 'View',
-                        'btn-link'  => ( Auth::user()->can('admin.news.edit') ? sprintf('/admin/news/%d/edit', $model->id) : '#' ),
-                        'btn-class' => ( Auth::user()->can('admin.news.edit') ? 'btn btn-default btn-sm btn-labeled' : 'btn btn-default btn-sm btn-labeled disabled' ),
+                        'btn-link'  => ( Auth::user()->can('admin.notes.edit') ? sprintf('/admin/notes/%d/view', $model->id) : '#' ),
+                        'btn-class' => ( Auth::user()->can('admin.notes.edit') ? 'btn btn-default btn-sm btn-labeled' : 'btn btn-default btn-sm btn-labeled disabled' ),
                         'btn-icon'  => 'fa fa-file'
                     ]];
                 },
+                'width'     => '15%',
             ]
         ]);
     }
