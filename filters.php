@@ -26,5 +26,4 @@ Route::filter('auth.admin', function () {
     }
 });
 
-// Check permissions when we start in the admin panel
 Route::when(Config::get('core::routes.paths.user').'/*', 'auth.user');

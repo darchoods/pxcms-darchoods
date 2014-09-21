@@ -20,12 +20,15 @@ class User extends VerifyVersion
             'username' => 'required|unique:users,username',
         ],
         'updating' => [
-            'username' => 'unique:users,username,:id:',
+            'username'   => 'unique:users,username,:id:',
+            'first_name' => 'alpha_dash',
+            'last_name'  => 'alpha_dash',
+            'use_nick'   => 'integer',
         ],
     ];
 
     protected static $messages;
-    protected $fillable = ['username', 'first_name', 'last_name', 'email', 'nicks', 'verified', 'disabled', 'created_at', 'updated_at'];
+    protected $fillable = ['username', 'first_name', 'last_name', 'email', 'nicks', 'use_nick', 'verified', 'disabled', 'created_at', 'updated_at'];
     protected $identifiableName = 'name';
 
     protected $link = [
@@ -61,6 +64,31 @@ class User extends VerifyVersion
     // {
     //     return $this->hasManyThrough(Config::get('verify::permission_model'), Config::get('verify::group_model'));
     // }
+
+    public function apiKey()
+    {
+        return $this->hasMany('\Cysha\Modules\Auth\Models\ApiKey');
+    }
+
+    public function scopeWhereNick($query, $username)
+    {
+        return $query->whereUsername($username)->orWhere('nicks', 'LIKE', '%"'.$username.'"%');
+    }
+
+    public function scopeFindOrCreate($query, array $where, array $attrs = array())
+    {
+        $objModel = static::firstOrCreate($where);
+
+        if (count($attrs) > 0) {
+            $objModel->fill($attrs);
+
+            if (count($objModel->getDirty())) {
+                $objModel->save();
+            }
+        }
+
+        return $objModel;
+    }
 
     public function getNameAttribute()
     {
@@ -100,20 +128,6 @@ class User extends VerifyVersion
         $this->attributes['nicks'] = json_encode($value);
     }
 
-    public function scopeFindOrCreate($query, array $where, array $attrs = array())
-    {
-        $objModel = static::firstOrCreate($where);
-
-        if (count($attrs) > 0) {
-            $objModel->fill($attrs);
-
-            if (count($objModel->getDirty())) {
-                $objModel->save();
-            }
-        }
-
-        return $objModel;
-    }
 
     public function isAdmin()
     {

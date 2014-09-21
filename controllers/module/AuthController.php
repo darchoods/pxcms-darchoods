@@ -62,8 +62,7 @@ class AuthController extends BaseController
         // actually log em in
         Auth::login($objUser, false);
 
-        return Redirect::intended(URL::route(Config::get('auth::user.redirect_to')))
-            ->withInfo(Lang::get('darchoods::auth.user.welcome', ['name' => $objUser->name]));
+        return Redirect::intended(URL::route(Config::get('auth::user.redirect_to')));
     }
 
     public function getLogout()

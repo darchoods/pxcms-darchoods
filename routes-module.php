@@ -21,6 +21,17 @@ Route::group(array('prefix' => Config::get('core::routes.paths.user')), function
         Route::get('{username}', array('as' => 'pxcms.user.view', 'uses' => $namespace.'\PagesController@getDashboard'));
     });
 
+    Route::group(['prefix' => 'settings'], function () use ($namespace) {
+        $namespace .= '\Users';
+
+        Route::get('api', array('as' => 'darchoods.settings.api', 'uses' => $namespace.'\SettingsController@getApiSettings'));
+        Route::post('api', array('uses' => $namespace.'\SettingsController@postApiSettings'));
+        Route::post('api/remove-key', array('as' => 'darchoods.settings.apiremove', 'uses' => $namespace.'\SettingsController@deleteApiSettings'));
+
+        Route::get('/', array('as' => 'darchoods.settings.user', 'uses' => $namespace.'\SettingsController@getUserSettings'));
+        Route::post('/', array('uses' => $namespace.'\SettingsController@postUserSettings'));
+    });
+
     Route::get('dashboard', array('as' => 'pxcms.user.dashboard', 'uses' => $namespace.'\PagesController@getDashboard'));
     Route::get('/', function () {
         return Redirect::route('pxcms.user.dashboard');
