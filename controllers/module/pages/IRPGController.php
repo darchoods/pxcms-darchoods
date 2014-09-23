@@ -30,7 +30,6 @@ class IRPGController extends BaseController
             },
         ]);
 
-
         $this->setTableColumns([
             'player' => [
                 'th' => 'Player',
