@@ -160,7 +160,7 @@ class IRPGController extends BaseController
 
     private function getCollection()
     {
-        $file = file_get_contents(base_path().'../irpg/irpg.db');
+        $file = file_get_contents(base_path().'/../irpg/irpg.db');
         $players = explode("\n", trim($file));
 
         unset($players[0]);
