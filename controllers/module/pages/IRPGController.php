@@ -16,7 +16,6 @@ class IRPGController extends BaseController
         $this->setLayout('col-1');
 
         $this->setTitle('IdleRPG Player List');
-        //$this->objTheme->breadcrumb()->add('Channel Manager', URL::route('admin.channels.index'));
         $this->assets();
 
         $this->setTableOptions([
@@ -156,7 +155,7 @@ class IRPGController extends BaseController
 
     private function getCollection()
     {
-        $file = file_get_contents(base_path().'/../irpg/irpg.db');
+        $db = file_get_contents(base_path().'/../irpg/irpg.db');
 
         $players = explode("\n", trim($db));
 
