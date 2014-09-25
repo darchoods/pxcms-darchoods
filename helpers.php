@@ -162,7 +162,6 @@ function chan_modes($query)
     return $cmodes;
 }
 
-
 function secs_to_h($secs)
 {
     $units = array(
@@ -191,4 +190,35 @@ function secs_to_h($secs)
     }
 
     return substr($s, 0, -2);
+}
+
+function MultiSort($data, $sortCriteria, $caseInSensitive = true)
+{
+    if (!is_array($data) || !is_array($sortCriteria)) {
+        return false;
+    }
+
+    $args = [];
+    $i = 0;
+
+    foreach ($sortCriteria as $sortColumn => $sortAttributes) {
+        $colLists = [];
+
+        foreach ($data as $key => $row) {
+            $convertToLower = $caseInSensitive && (in_array(SORT_STRING, $sortAttributes) || in_array(SORT_REGULAR, $sortAttributes));
+            $rowData = $convertToLower ? strtolower($row[$sortColumn]) : $row[$sortColumn];
+            $colLists[$sortColumn][$key] = $rowData;
+        }
+
+        $args[] = &$colLists[$sortColumn];
+        foreach ($sortAttributes as $sortAttribute) {
+            $tmp[$i] = $sortAttribute;
+            $args[] = &$tmp[$i];
+            $i++;
+        }
+    }
+    $args[] = &$data;
+    call_user_func_array('array_multisort', $args);
+
+    return end($args);
 }

@@ -20,10 +20,10 @@ class IRPGController extends BaseController
         $this->assets();
 
         $this->setTableOptions([
-            'filtering'     => true,
-            'pagination'    => true,
-            'sorting'       => true,
-            'sort_column'   => 'level',
+            'filtering'     => false,
+            'pagination'    => false,
+            'sorting'       => false,
+            'sort_column'   => ['level' => 'desc', 'secs' => 'asc'],
             'source'        => URL::route('darchoods.pages.irpg-ajax'),
             'collection'    => function () {
                 return $this->getCollection();
@@ -36,10 +36,10 @@ class IRPGController extends BaseController
                 'tr' => function ($model) {
                     $column = null;
 
-                    $online = $model->online == 1 ? 'success' : 'danger';
-                    $status = $model->online == 1 ? 'User is online' : 'User is offline';
+                    $online = $model['online'] == 1 ? 'success' : 'danger';
+                    $status = $model['online'] == 1 ? 'User is online' : 'User is offline';
                     $column .= sprintf('<span class="label label-%s" data-toggle="tooltip" title="%s">&nbsp;</span>', $online, $status);
-                    $column .= ' '.e($model->name);
+                    $column .= ' '.e($model['name']);
 
                     return $column;
                 },
@@ -50,25 +50,16 @@ class IRPGController extends BaseController
             'level' => [
                 'th' => 'Level',
                 'tr' => function ($model) {
-                    return $model->level;
+                    return $model['level'];
                 },
-                'sorting' => false,
+                'sorting' => true,
                 'filtering' => false,
                 'width' => '5%',
             ],
-            //'idled' => [
-            //    'th' => 'Seconds Idled',
-            //    'tr' => function ($model) {
-            //        return secs_to_h($model->idled);
-            //    },
-            //    'sorting' => false,
-            //    'filtering' => false,
-            //    'width' => '5%',
-            //],
             'alignment' => [
                 'th' => 'Alignment',
                 'tr' => function ($model) {
-                    switch($model->alignment) {
+                    switch($model['alignment']) {
                         case 'e':
                             $label = 'danger';
                             $text = 'Evil';
@@ -88,38 +79,24 @@ class IRPGController extends BaseController
 
                     return sprintf('<div class="label label-%s">%s</div>', $label, $text);
                 },
-                'sorting' => false,
+                'sorting' => true,
                 'filtering' => false,
                 'width' => '5%',
             ],
             'next_level' => [
                 'th' => 'Next Level In..',
                 'tr' => function ($model) {
-                    return secs_to_h($model->secs);
+                    return secs_to_h($model['secs']);
                 },
-                'sorting' => false,
+                'sorting' => true,
                 'filtering' => false,
                 'width' => '20%',
-            ],
-            'total' => [
-                'th' => 'Total',
-                'tr' => function ($model) {
-                    $total = 0;
-                    foreach ($model->items as $i) {
-                        $total += intval($i);
-                    }
-
-                    return $total;
-                },
-                'sorting' => false,
-                'filtering' => false,
-                'width' => '5%',
             ],
             'items' => [
                 'th' => 'Items',
                 'tr' => function ($model) {
                     $items = [];
-                    foreach ($model->items as $key => $val) {
+                    foreach ($model['items'] as $key => $val) {
                         $extra = null;
                         if ($key == 'helm' && substr($val, -1, 1) == 'a') {
                             $extra = ' <i class="fa fa-star" data-toggle="tooltip" data-placement="top" title="Matt\'s Omniscience Grand Crown"></i>';
@@ -155,20 +132,44 @@ class IRPGController extends BaseController
                 'filtering' => false,
                 'width' => '30%',
             ],
+            'total' => [
+                'th' => 'Item Level',
+                'tr' => function ($model) {
+                    return $model['total'];
+                },
+                'sorting' => true,
+                'filtering' => false,
+                'width' => '5%',
+            ],
+            'actualTotal' => [
+                'th' => 'Battle Level',
+                'tr' => function ($model) {
+                    return $model['actualTotal'];
+                },
+                'sorting' => true,
+                'filtering' => false,
+                'width' => '5%',
+            ],
+
         ]);
     }
 
     private function getCollection()
     {
         $file = file_get_contents(base_path().'/../irpg/irpg.db');
-        $players = explode("\n", trim($file));
+
+        $players = explode("\n", trim($db));
 
         unset($players[0]);
         $users = [];
         foreach ($players as $player) {
             $info = explode("\t", trim($player));
 
-            $users[] = (object)[
+            if ($info[8] == 0) {
+                continue;
+            }
+
+            $user = (array)[
                 'name'       => $info[0],
                 'admin'      => $info[2],
                 'level'      => $info[3],
@@ -207,7 +208,36 @@ class IRPGController extends BaseController
                     'weapon'   => $info[30],
                 ],
             ];
+
+            $total = 0;
+            foreach ($user['items'] as $i) {
+                $total += intval($i);
+            }
+            $user['total'] = $total;
+
+            $user['modTotal'] = 0;
+            if ($user['alignment'] == 'e') {
+                $user['modTotal'] -= 10;
+            } elseif ($user['alignment'] == 'g') {
+                $user['modTotal'] += 10;
+            }
+
+            if ($user['modTotal'] !== 0) {
+                $user['difference'] = floor($user['total']/$user['modTotal']);
+                $user['actualTotal'] = round($user['total'] + $user['difference']);
+            } else {
+                $user['difference'] = 0;
+                $user['actualTotal'] = $user['total'];
+            }
+
+
+            $users[] = $user;
         }
+
+        $users = MultiSort($users, [
+            'level' => [SORT_DESC, SORT_NUMERIC],
+            'secs' => [SORT_ASC, SORT_NUMERIC],
+        ], true);
 
         return new Collection($users);
     }
