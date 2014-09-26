@@ -48,10 +48,12 @@ Route::group(['prefix' => 'news'], function () use ($namespace) {
 
 /** IRPG **/
 Route::group(['prefix' => 'irpg'], function () use ($namespace) {
+    $namespace .= '\Irpg';
 
+    Route::get('stats', ['as' => 'darchoods.irpg.stats', 'uses' => $namespace.'\PagesController@getStats']);
 
-    Route::get('players/search.json', ['as' => 'darchoods.pages.irpg-ajax', 'uses' => $namespace.'\Pages\IRPGController@getDataTableJson']);
-    Route::get('players', ['as' => 'darchoods.pages.irpg', 'uses' => $namespace.'\Pages\IRPGController@getDataTableIndex']);
+    Route::get('players/search.json', ['as' => 'darchoods.irpg.leaderboard-ajax', 'uses' => $namespace.'\LeaderboardController@getDataTableJson']);
+    Route::get('players', ['as' => 'darchoods.irpg.leaderboard', 'uses' => $namespace.'\LeaderboardController@getDataTableIndex']);
 });
 
 Route::get('/', ['as' => 'pxcms.pages.home', 'uses' => $namespace.'\Pages\NewsController@getNews']);
