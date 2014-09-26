@@ -17,8 +17,7 @@ class BaseIrpgController extends BaseController
 
     protected function getIrpgDBCollection($sort = array())
     {
-        // $db = file_get_contents(base_path().'/../irpg/irpg.db');
-        $db = file_get_contents('https://www.darchoods.net/irpg.db');
+        $db = file_get_contents(base_path().'/../irpg/irpg.db');
 
         $players = explode("\n", trim($db));
 
