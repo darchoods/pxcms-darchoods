@@ -28,7 +28,9 @@ class PagesController extends BaseIrpgController
         ];
 
         foreach ($sorts as $key => $options) {
-            $sorts[$key]['data'] = $this->getIrpgDBCollection([$key => $options['sort']])->slice(0, $options['keep']);
+            $sorts[$key]['data'] = $this->getIrpgDBCollection([$key => $options['sort']])->filter(function ($row) {
+                return ($row['level'] > 0);
+            })->slice(0, $options['keep']);
         }
 
         $users = $this->getIrpgDBCollection();

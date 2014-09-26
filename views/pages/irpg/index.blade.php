@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-4">
         <div class="page-header">
-            <h2>Top {{ $data['actualTotal']['keep'] }} in actual item level</h2>
+            <h2>Top {{ $data['actualTotal']['keep'] }} in battle level</h2>
         </div>
 
         @include('darchoods::pages.irpg._table', ['key' => 'actualTotal', 'db' => $data])
