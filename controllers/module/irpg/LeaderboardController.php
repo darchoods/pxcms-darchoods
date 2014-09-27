@@ -121,7 +121,7 @@ class LeaderboardController extends BaseIrpgController
                             $extra = ' <i class="fa fa-star" data-toggle="tooltip" data-placement="top" title="Juliet\'s Glorious Ring of Sparkliness"></i>';
                         }
 
-                        $items[] = '<span data-toggle="tooltip" data-placement="top" title="'.ucwords($key).'">'.$val.'</span>'.$extra;
+                        $items[] = '<span data-toggle="tooltip" data-placement="top" title="'.ucwords($key).'">'.intval($val).'</span>'.$extra;
                     }
 
                     return sprintf('(%s)', implode(' | ', $items));
