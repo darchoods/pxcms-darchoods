@@ -51,6 +51,11 @@ class ChannelController extends BaseController
                 return false;
             }
 
+            $modes = str_split($chan['modes']);
+            if (!in_array('n', $modes) && !in_array('t', $modes)) {
+                return false;
+            }
+
             $chan['extra'] = null;
             if (array_get($channelList, $chan['name']) == 'network') {
                 $chan['extra'] = 'success';
