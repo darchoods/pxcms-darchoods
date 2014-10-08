@@ -21,14 +21,19 @@ class PagesController extends BaseIrpgController
                 'output' => ['Player' => 'name', 'Level' => 'level', 'Actual Item Level' => 'actualTotal']
             ],
             'secs' => [
-                'keep'   => 5,
-                'sort'   => [SORT_ASC, SORT_NUMERIC],
-                'output' => ['Player' => 'name', 'Level' => 'level', 'Next Level in..' => 'level_up']
+                'keep'           => 5,
+                'sort'           => [SORT_ASC, SORT_NUMERIC],
+                'output'         => ['Player' => 'name', 'Level' => 'level', 'Next Level in..' => 'level_up'],
+                'requireOnline' => true,
             ],
         ];
 
         foreach ($sorts as $key => $options) {
-            $sorts[$key]['data'] = $this->getIrpgDBCollection([$key => $options['sort']])->filter(function ($row) {
+            $sorts[$key]['data'] = $this->getIrpgDBCollection([$key => $options['sort']])->filter(function ($row) use ($options) {
+                if ($row['online'] != '1' && array_get($options, 'requireOnline', false) == true) {
+                    return false;
+                }
+
                 return ($row['level'] > 0);
             })->slice(0, $options['keep']);
         }
