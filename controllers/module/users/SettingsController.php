@@ -33,7 +33,7 @@ class SettingsController extends BaseUserController
 
     public function postUserSettings()
     {
-        $this->user->fill(Input::only(['first_name', 'last_name', 'use_nick']));
+        $this->user->fill(Input::only(['first_name', 'last_name', 'use_nick', 'weather']));
         $save = $this->user->save();
 
         if ($save === false) {

@@ -28,7 +28,7 @@ class User extends VerifyVersion
     ];
 
     protected static $messages;
-    protected $fillable = ['username', 'first_name', 'last_name', 'email', 'nicks', 'use_nick', 'verified', 'disabled', 'created_at', 'updated_at'];
+    protected $fillable = ['username', 'first_name', 'last_name', 'email', 'nicks', 'use_nick', 'verified', 'weather', 'disabled', 'created_at', 'updated_at'];
     protected $identifiableName = 'name';
 
     protected $link = [
