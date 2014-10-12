@@ -16,6 +16,7 @@ class User extends BaseModel
             'username'     => (string) $this->username,
             'realname'     => (string) $this->realname,
             'mask'         => (string) $this->hiddenhostname,
+            'account'      => (string) $this->account,
             'modes'        => (string) $this->modes,
             'userstring'   => (string) $this->username.'!'.$this->realname.'@'.$this->hiddenhostname,
 
