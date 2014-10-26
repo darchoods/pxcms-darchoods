@@ -51,6 +51,7 @@ Route::group(['prefix' => 'irpg'], function () use ($namespace) {
     $namespace .= '\Irpg';
 
     Route::get('stats', ['as' => 'darchoods.irpg.stats', 'uses' => $namespace.'\PagesController@getStats']);
+    Route::get('quests', ['as' => 'darchoods.irpg.quests', 'uses' => $namespace.'\PagesController@getQuests']);
 
     Route::get('players/search.json', ['as' => 'darchoods.irpg.leaderboard-ajax', 'uses' => $namespace.'\LeaderboardController@getDataTableJson']);
     Route::get('players', ['as' => 'darchoods.irpg.leaderboard', 'uses' => $namespace.'\LeaderboardController@getDataTableIndex']);

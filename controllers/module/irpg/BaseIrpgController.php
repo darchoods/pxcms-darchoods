@@ -15,6 +15,69 @@ class BaseIrpgController extends BaseController
         $this->setLayout('col-1');
     }
 
+    protected function getIrpgQuestCollection($sort = array())
+    {
+        if (\App::environment() == 'local') {
+            $db = file_get_contents('https://www.darchoods.net/questinfo.txt');
+        } else {
+            $db = file_get_contents(base_path().'/../irpg/questinfo.txt');
+        }
+
+        $lines = explode("\n", trim($db));
+        if (!count($lines)) {
+            return [];
+        }
+
+        $info = [];
+        $i = 0;
+        foreach ($lines as $line) {
+            $arg = explode(' ', trim($line));
+
+            switch ($arg[0]) {
+                case 'T':
+                    $i++;
+                    unset($arg[0]);
+                    $info[$i]['quest'] = implode(' ', $arg);
+                break;
+
+                case 'Y':
+                    $info[$i]['type'] = $type = $arg[1];
+                break;
+
+                case 'p':
+                    $info[$i]['goals']['p1'][0] = $arg[1];
+                    $info[$i]['goals']['p1'][1] = $arg[2];
+                    $info[$i]['goals']['p2'][0] = $arg[3];
+                    $info[$i]['goals']['p2'][1] = $arg[4];
+                break;
+
+                case 'S':
+                    if ($type == 1) {
+                        $info[$i]['started'] = $time = $arg[1];
+                    } elseif ($type == 2) {
+                        $info[$i]['stage'] = $stage = $arg[1];
+                    }
+                break;
+
+                case 'P1':
+                case 'P2':
+                case 'P3':
+                case 'P4':
+                    $info[$i]['players'][strtolower($arg[0])]['name'] = $arg[1];
+                    $info[$i]['players'][strtolower($arg[0])]['x'] = array_get($arg, '2', 0);
+                    $info[$i]['players'][strtolower($arg[0])]['y'] = array_get($arg, '3', 0);
+                break;
+            }
+
+        }
+
+        if (empty($info)) {
+            return [];
+        }
+
+        return $info;
+    }
+
     protected function getIrpgDBCollection($sort = array())
     {
         if (\App::environment() == 'local') {

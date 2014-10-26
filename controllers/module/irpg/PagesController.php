@@ -16,15 +16,15 @@ class PagesController extends BaseIrpgController
 
         $sorts = [
             'actualTotal' => [
-                'keep'   => 5,
-                'sort'   => [SORT_DESC, SORT_NUMERIC],
-                'output' => ['Player' => 'name', 'Level' => 'level', 'Actual Item Level' => 'actualTotal']
+                'keep'           => 5,
+                'sort'           => [SORT_DESC, SORT_NUMERIC],
+                'output'         => ['Player' => 'name', 'Level' => 'level', 'Actual Item Level' => 'actualTotal']
             ],
             'secs' => [
                 'keep'           => 5,
                 'sort'           => [SORT_ASC, SORT_NUMERIC],
                 'output'         => ['Player' => 'name', 'Level' => 'level', 'Next Level in..' => 'level_up'],
-                'requireOnline' => true,
+                'requireOnline'  => true,
             ],
         ];
 
@@ -55,7 +55,16 @@ class PagesController extends BaseIrpgController
         return $this->setView('pages.irpg.index', ['data' => $sorts], 'module');
     }
 
-    public function getOnlineOffline(Collection $users)
+    public function getQuests()
+    {
+        $this->setTitle('IdleRPG Quests');
+
+        return $this->setView('pages.irpg.quests', [
+            'quests' => $this->getIrpgQuestCollection()
+        ], 'module');
+    }
+
+    private function getOnlineOffline(Collection $users)
     {
         $userCount = $users->count();
         $online = $users->filter(function ($row) { return $row['online'] == '1'; })->count();
@@ -87,7 +96,7 @@ class PagesController extends BaseIrpgController
         return [];
     }
 
-    public function getAlignment($users)
+    private function getAlignment($users)
     {
         $counters = ['Good' => 0, 'Evil' => 0, 'Neutral' => 0];
 
@@ -133,7 +142,7 @@ class PagesController extends BaseIrpgController
         return [];
     }
 
-    public function getLevelSpread($users)
+    private function getLevelSpread($users)
     {
         $levels = [];
 
