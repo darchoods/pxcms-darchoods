@@ -44,7 +44,7 @@ class BaseIrpgController extends BaseController
                     $info[$i]['type'] = $type = $arg[1];
                 break;
 
-                case 'p':
+                case 'P':
                     $info[$i]['goals']['p1'][0] = $arg[1];
                     $info[$i]['goals']['p1'][1] = $arg[2];
                     $info[$i]['goals']['p2'][0] = $arg[3];
