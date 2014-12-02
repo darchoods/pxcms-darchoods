@@ -112,7 +112,7 @@ class User extends VerifyVersion
     public function getAvatarAttribute($val)
     {
         if (empty($val) || $val == 'gravatar') {
-            return sprintf('http://www.gravatar.com/avatar/%s.png', md5($this->attributes['email']));
+            return sprintf('https://www.gravatar.com/avatar/%s.png', md5($this->attributes['email']));
         }
 
         return $val;
