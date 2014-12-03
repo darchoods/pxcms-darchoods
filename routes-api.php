@@ -1,6 +1,6 @@
 <?php
 
-Route::api(['version' => 'v1', 'prefix' => \Config::get('core::routes.paths.api', 'api')], function () use ($namespace) {
+Route::api(['version' => 'v1', 'prefix' => \Config::get('core::routes.paths.api', 'api'), 'protected' => true], function () use ($namespace) {
     $namespace .= '\Api\V1';
 
     Route::group(['prefix' => 'irc'], function () use ($namespace) {
