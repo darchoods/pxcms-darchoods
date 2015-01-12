@@ -116,21 +116,49 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
 
         // simulate the transformer
         $users = array_map(function ($user) {
-            $mode = null;
+            $channelModes = null;
             if ($user->mode_lq == 'Y') {
-                $mode .= 'q';
+                $channelModes .= 'q';
             }
             if ($user->mode_la == 'Y') {
-                $mode .= 'a';
+                $channelModes .= 'a';
             }
             if ($user->mode_lo == 'Y') {
-                $mode .= 'o';
+                $channelModes .= 'o';
             }
             if ($user->mode_lh == 'Y') {
-                $mode .= 'h';
+                $channelModes .= 'h';
             }
             if ($user->mode_lv == 'Y') {
-                $mode .= 'v';
+                $channelModes .= 'v';
+            }
+
+            $clientModes = null;
+            $isBot = false;
+            if ($user->mode_ub == 'Y') {
+                $clientModes .= 'B';
+                $isBot = true;
+            }
+            if ($user->mode_ug == 'Y') {
+                $clientModes .= 'G';
+            }
+            if ($user->mode_uh == 'Y') {
+                $clientModes .= 'H';
+            }
+            if ($user->mode_ui == 'Y') {
+                $clientModes .= 'i';
+            }
+            if ($user->mode_uq == 'Y') {
+                $clientModes .= 'q';
+            }
+            if ($user->mode_ur == 'Y') {
+                $clientModes .= 'R';
+            }
+            if ($user->mode_us == 'Y') {
+                $clientModes .= 'S';
+            }
+            if ($user->mode_uw == 'Y') {
+                $clientModes .= 'W';
             }
 
             if ($user->hiddenhostname == 'services.darkscience.net') {
@@ -138,19 +166,28 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
             }
 
             return [
-                'nick'         => (string) $user->nick,
-                'username'     => (string) $user->username,
-                'realname'     => (string) $user->realname,
-                'mask'         => (string) $user->hiddenhostname,
-                'modes'        => (string) $mode,
-                'online'       => (bool) ($user->online !== 'Y' ? false : true),
-                'identified'   => (bool) ($user->online !== 'Y' || empty($user->account) ? false : true),
-                'away'         => (bool) ($user->away === 'Y' ? true : false),
-                'away_msg'     => ($user->away == 'Y' ? (string) $user->awaymsg : null),
-                'country_code' => (string) $user->countrycode,
-                'country'      => (string) $user->country,
-                'version'      => (string) $user->ctcpversion,
-                'server'       => (string) $user->server,
+                'nick'          => (string) $user->nick,
+                'username'      => (string) $user->username,
+                'realname'      => (string) $user->realname,
+                'mask'          => (string) $user->hiddenhostname,
+                'account'       => (string) $user->account,
+                'modes'         => (string) $clientModes,
+                'channel_modes' => (string) $channelModes,
+                'userstring'    => (string) $user->username.'!'.$user->realname.'@'.$user->hiddenhostname,
+
+                'online'        => (bool) ($user->online !== 'Y' ? false : true),
+                'online_last'   => $user->lastquit ? strtotime($user->lastquit) : null,
+                'identified'    => (bool) ($user->online !== 'Y' || empty($user->account) ? false : true),
+                'is_bot'        => (bool) ($isBot === false ? false : true),
+
+                'away'          => (bool) ($user->away === 'Y' ? true : false),
+                'away_msg'      => ($user->away == 'Y' ? (string) $user->awaymsg : null),
+
+                'country_code'  => (string) $user->countrycode,
+                'country'       => (string) $user->country,
+
+                'version'       => (string) $user->ctcpversion,
+                'server'        => (string) $user->server,
             ];
         }, $users);
 

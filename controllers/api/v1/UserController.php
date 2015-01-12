@@ -45,7 +45,6 @@ class UserController extends BAC
 
         // get user info
         $data['user'] = $this->ircUser->getUserByNick($username);
-        unset($data['user']['modes']);
 
         // grab the users channels
         $data['channels'] = $this->ircChannel->getUsersChannels($username);
