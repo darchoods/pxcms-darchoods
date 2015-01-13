@@ -17,10 +17,8 @@ class User extends BaseModel
     public function getModesAttribute()
     {
         $clientModes = null;
-        $isBot = false;
         if ($this->mode_ub == 'Y') {
             $clientModes .= 'B';
-            $isBot = true;
         }
         if ($this->mode_ug == 'Y') {
             $clientModes .= 'G';
@@ -84,7 +82,7 @@ class User extends BaseModel
             'online'        => (bool) ($this->online !== 'Y' ? false : true),
             'online_last'   => $this->lastquit ? strtotime($this->lastquit) : null,
             'identified'    => (bool) ($this->online !== 'Y' || empty($this->account) ? false : true),
-            'is_bot'        => (bool) ($isBot === false ? false : true),
+            'is_bot'        => (bool) (strpos($this->modes, 'B') === false ? false : true),
 
             'away'          => (bool) ($this->away === 'Y' ? true : false),
             'away_msg'      => ($this->away == 'Y' ? (string) $this->away_msg : null),
