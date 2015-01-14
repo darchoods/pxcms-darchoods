@@ -145,7 +145,7 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
                 'account'       => (string) $user->account,
                 'modes'         => (string) $clientModes,
                 'channel_modes' => (string) $channelModes,
-                'userstring'    => (string) $user->username.'!'.$user->realname.'@'.$user->hiddenhostname,
+                'userstring'    => (string) $user->nick.'!'.$user->username.'@'.$user->hiddenhostname,
 
                 'online'        => (bool) ($user->online !== 'Y' ? false : true),
                 'online_last'   => $user->lastquit ? strtotime($user->lastquit) : null,

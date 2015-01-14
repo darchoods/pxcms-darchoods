@@ -60,7 +60,7 @@ class User extends BaseModel
             'account'       => (string) $this->account,
             'modes'         => (string) $this->modes,
             'channel_modes' => (string) $this->channelModes,
-            'userstring'    => (string) $this->username.'!'.$this->realname.'@'.$this->hiddenhostname,
+            'userstring'    => (string) $user->nick.'!'.$user->username.'@'.$this->hiddenhostname,
 
             'online'        => (bool) ($this->online !== 'Y' ? false : true),
             'online_last'   => $this->lastquit ? strtotime($this->lastquit) : null,
