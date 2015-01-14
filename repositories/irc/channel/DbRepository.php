@@ -76,24 +76,14 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
 
         $channels = [];
         foreach ($chans as $chan) {
-            $mode = null;
-            if ($chan->mode_lq == 'Y') {
-                $mode .= 'q';
-            }
-            if ($chan->mode_la == 'Y') {
-                $mode .= 'a';
-            }
-            if ($chan->mode_lo == 'Y') {
-                $mode .= 'o';
-            }
-            if ($chan->mode_lh == 'Y') {
-                $mode .= 'h';
-            }
-            if ($chan->mode_lv == 'Y') {
-                $mode .= 'v';
-            }
+            $channelModes = null;
+            if ($chan->mode_lq == 'Y') { $channelModes .= 'q'; }
+            if ($chan->mode_la == 'Y') { $channelModes .= 'a'; }
+            if ($chan->mode_lo == 'Y') { $channelModes .= 'o'; }
+            if ($chan->mode_lh == 'Y') { $channelModes .= 'h'; }
+            if ($chan->mode_lv == 'Y') { $channelModes .= 'v'; }
 
-            $channels[$chan->channel] = $mode;
+            $channels[$chan->channel] = $channelModes;
         }
 
         return $channels;
@@ -116,50 +106,32 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
 
         // simulate the transformer
         $users = array_map(function ($user) {
-            $channelModes = null;
-            if ($user->mode_lq == 'Y') {
-                $channelModes .= 'q';
-            }
-            if ($user->mode_la == 'Y') {
-                $channelModes .= 'a';
-            }
-            if ($user->mode_lo == 'Y') {
-                $channelModes .= 'o';
-            }
-            if ($user->mode_lh == 'Y') {
-                $channelModes .= 'h';
-            }
-            if ($user->mode_lv == 'Y') {
-                $channelModes .= 'v';
-            }
-
             $clientModes = null;
-            $isBot = false;
-            if ($user->mode_ub == 'Y') {
-                $clientModes .= 'B';
-                $isBot = true;
-            }
-            if ($user->mode_ug == 'Y') {
-                $clientModes .= 'G';
-            }
-            if ($user->mode_uh == 'Y') {
-                $clientModes .= 'H';
-            }
-            if ($user->mode_ui == 'Y') {
-                $clientModes .= 'i';
-            }
-            if ($user->mode_uq == 'Y') {
-                $clientModes .= 'q';
-            }
-            if ($user->mode_ur == 'Y') {
-                $clientModes .= 'R';
-            }
-            if ($user->mode_us == 'Y') {
-                $clientModes .= 'S';
-            }
-            if ($user->mode_uw == 'Y') {
-                $clientModes .= 'W';
-            }
+            if ($user->mode_ub == 'Y') { $clientModes .= 'B'; }
+            if ($user->mode_lc == 'Y') { $clientModes .= 'c'; }
+            if ($user->mode_ld == 'Y') { $clientModes .= 'd'; }
+            if ($user->mode_lg == 'Y') { $clientModes .= 'g'; }
+            if ($user->mode_ug == 'Y') { $clientModes .= 'G'; }
+            if ($user->mode_lh == 'Y') { $clientModes .= 'h'; }
+            if ($user->mode_uh == 'Y') { $clientModes .= 'H'; }
+            if ($user->mode_li == 'Y') { $clientModes .= 'i'; }
+            if ($user->mode_ui == 'Y') { $clientModes .= 'I'; }
+            if ($user->mode_lo == 'Y') { $clientModes .= 'o'; }
+            if ($user->mode_uq == 'Y') { $clientModes .= 'Q'; }
+            if ($user->mode_ur == 'Y') { $clientModes .= 'R'; }
+            if ($user->mode_lr == 'Y') { $clientModes .= 'r'; }
+            if ($user->mode_ls == 'Y') { $clientModes .= 's'; }
+            if ($user->mode_us == 'Y') { $clientModes .= 'S'; }
+            if ($user->mode_uw == 'Y') { $clientModes .= 'W'; }
+            if ($user->mode_lx == 'Y') { $clientModes .= 'x'; }
+
+            $channelModes = null;
+            if ($user->mode_lq == 'Y') { $channelModes .= 'q'; }
+            if ($user->mode_la == 'Y') { $channelModes .= 'a'; }
+            if ($user->mode_lo == 'Y') { $channelModes .= 'o'; }
+            if ($user->mode_lh == 'Y') { $channelModes .= 'h'; }
+            if ($user->mode_lv == 'Y') { $channelModes .= 'v'; }
+
 
             if ($user->hiddenhostname == 'services.darkscience.net') {
                 $user->ctcpversion = 'atheme';
@@ -178,7 +150,7 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
                 'online'        => (bool) ($user->online !== 'Y' ? false : true),
                 'online_last'   => $user->lastquit ? strtotime($user->lastquit) : null,
                 'identified'    => (bool) ($user->online !== 'Y' || empty($user->account) ? false : true),
-                'is_bot'        => (bool) ($isBot === false ? false : true),
+                'is_bot'        => (bool) (strpos($clientModes, 'B') === false ? false : true),
 
                 'away'          => (bool) ($user->away === 'Y' ? true : false),
                 'away_msg'      => ($user->away == 'Y' ? (string) $user->awaymsg : null),

@@ -45,6 +45,9 @@ class UserController extends BAC
 
         // get user info
         $data['user'] = $this->ircUser->getUserByNick($username);
+        if (!count($data['user'])) {
+            return $this->sendError('User does not exist', 404);
+        }
 
         // grab the users channels
         $data['channels'] = $this->ircChannel->getUsersChannels($username);
