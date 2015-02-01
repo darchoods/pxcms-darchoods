@@ -43,7 +43,8 @@ class ServiceProvider extends BaseServiceProvider
 
     public function registerViewComposers()
     {
-        $this->app->make('view')->composer('theme.*::views/partials.theme.sidebar-*', '\Cysha\Modules\Darchoods\Composers\Sidebar');
+        $this->app->make('view')->composer('theme.*::views/partials.theme.sidebar-*', '\Cysha\Modules\Darchoods\Composers\Sidebar@userList');
+        // $this->app->make('view')->composer('theme.*::views/partials.theme.sidebar-*', '\Cysha\Modules\Darchoods\Composers\Sidebar@channelList');
     }
 
     private function registerOtherPackages()

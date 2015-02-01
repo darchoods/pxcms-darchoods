@@ -3,7 +3,7 @@
 class Sidebar
 {
 
-    public function compose($view)
+    public function userList($view)
     {
         $users = with(\App::make('Cysha\Modules\Darchoods\Repositories\Irc\Channel\RepositoryInterface'))->getUsersInChannel('#darchoods');
 
