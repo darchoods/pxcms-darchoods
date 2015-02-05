@@ -6,11 +6,14 @@ class Sidebar
     public function userList($view)
     {
         $users = with(\App::make('Cysha\Modules\Darchoods\Repositories\Irc\Channel\RepositoryInterface'))->getUsersInChannel('#darchoods');
+        if ($users === false || !count($users)) {
+            $view->with('dhUsers', []);
+            return;
+        }
 
         $output = [];
         foreach ($users as $user) {
             $modes = array_get($user, 'modes');
-
 
             if (strstr($modes, 'q') !== false) {
                 $output['Owner'][] = array_get($user, 'nick');
