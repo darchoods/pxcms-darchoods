@@ -3,6 +3,8 @@
 use Cysha\Modules\Darchoods\Controllers\Module\BaseController;
 use Cysha\Modules\Darchoods\Helpers\IRC as IRC;
 use Cysha\Modules\Darchoods\Repositories\Irc\Channel\RepositoryInterface as IrcChannelRepository;
+use Cysha\Modules\Qdb\Repositories\Channel\RepositoryInterface as QdbChannelRepository;
+use Cysha\Modules\Qdb\Repositories\Quote\RepositoryInterface as QdbQuoteRepository;
 use Illuminate\Support\Collection;
 use Auth;
 use DB;
@@ -12,11 +14,13 @@ use Config;
 
 class ChannelController extends BaseController
 {
-    public function __construct(IrcChannelRepository $channels)
+    public function __construct(IrcChannelRepository $ircChan, QdbChannelRepository $qdbChan, QdbQuoteRepository $qdbQuote)
     {
         parent::__construct();
-        $this->repo = $channels;
 
+        $this->ircChan = $ircChan;
+        $this->qdbChan = $qdbChan;
+        $this->qdbQuote = $qdbQuote;
     }
 
     public function getIndex()
@@ -29,10 +33,26 @@ class ChannelController extends BaseController
         ])->header('Content-type', 'text/html; charset=utf-8');
     }
 
+    public function getChannel($channel)
+    {
+        //$this->setTitle('Channel List');
+        //$this->setDecorativeMode();
+
+        $ircChan = $this->ircChan->getChannel($channel);
+        $qdbChan = $this->qdbChan->getChannel($channel);
+        echo \Debug::dump($ircChan, 'irc channel');
+        echo \Debug::dump($qdbChan->transform(), 'qdb channel');
+        echo \Debug::dump($this->qdbQuote->getRandomByChannel($qdbChan, 5), 'qdb quotes');
+
+        return $this->setView('pages.channels.view', [
+            'channel' => $channel
+        ])->header('Content-type', 'text/html; charset=utf-8');
+    }
+
     public function getCollection()
     {
         try {
-            $dbChans = $this->repo->getAll();
+            $dbChans = $this->ircChan->getAll();
         } catch (\PDOException $e) {
             Session::flash('error', 'Cannot get channel list from IRC.');
             return [];

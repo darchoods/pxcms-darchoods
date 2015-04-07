@@ -1,19 +1,14 @@
 <?php namespace Cysha\Modules\Darchoods\Models;
 
-use \Toddish\Verify\Models\User as VerifyVersion;
 use Lang;
 use Config;
 
-class User extends VerifyVersion
+class User extends \Cysha\Modules\Auth\Models\User
 {
     use \Cysha\Modules\Core\Traits\SelfValidationTrait,
-        \Cysha\Modules\Core\Traits\LinkableTrait,
-        \Venturecraft\Revisionable\RevisionableTrait{
+        \Cysha\Modules\Core\Traits\LinkableTrait{
         \Cysha\Modules\Core\Traits\SelfValidationTrait::boot as validationBoot;
-        \Venturecraft\Revisionable\RevisionableTrait::boot as revisionableBoot;
     }
-
-    protected $revisionEnabled = false;
 
     protected static $rules = [
         'creating' => [
@@ -28,12 +23,12 @@ class User extends VerifyVersion
     ];
 
     protected static $messages;
-    protected $fillable = ['username', 'first_name', 'last_name', 'email', 'nicks', 'use_nick', 'verified', 'weather', 'disabled', 'created_at', 'updated_at'];
-    protected $identifiableName = 'name';
+    protected $identifiableName = 'screenname';
+    protected $appends = ['screenname'];
 
     protected $link = [
         'route'      => 'pxcms.user.view',
-        'attributes' => ['name' => 'name'],
+        'attributes' => ['name' => 'screenname'],
     ];
 
     public function __construct()
@@ -52,22 +47,6 @@ class User extends VerifyVersion
     public static function boot()
     {
         static::validationBoot();
-        static::revisionableBoot();
-    }
-
-    public function roles()
-    {
-        return $this->belongsToMany('\Cysha\Modules\Auth\Models\Role', $this->prefix.'role_user')->withTimestamps();
-    }
-
-    // public function permissions()
-    // {
-    //     return $this->hasManyThrough(Config::get('verify::permission_model'), Config::get('verify::group_model'));
-    // }
-
-    public function apiKey()
-    {
-        return $this->hasMany('\Cysha\Modules\Auth\Models\ApiKey');
     }
 
     public function scopeWhereNick($query, $username)
@@ -75,22 +54,7 @@ class User extends VerifyVersion
         return $query->whereUsername($username)->orWhere('nicks', 'LIKE', '%"'.$username.'"%');
     }
 
-    public function scopeFindOrCreate($query, array $where, array $attrs = array())
-    {
-        $objModel = static::firstOrCreate($where);
-
-        if (count($attrs) > 0) {
-            $objModel->fill($attrs);
-
-            if (count($objModel->getDirty())) {
-                $objModel->save();
-            }
-        }
-
-        return $objModel;
-    }
-
-    public function getNameAttribute()
+    public function getScreennameAttribute()
     {
         if ($this->use_nick == '-1' && !empty($this->first_name) && !empty($this->last_name)) {
             return $this->fullName;
@@ -103,21 +67,6 @@ class User extends VerifyVersion
         return array_get($this->nicks, $this->use_nick, $this->username);
     }
 
-
-    public function getFullNameAttribute()
-    {
-        return implode(' ', [$this->first_name, $this->last_name]);
-    }
-
-    public function getAvatarAttribute($val)
-    {
-        if (empty($val) || $val == 'gravatar') {
-            return sprintf('https://www.gravatar.com/avatar/%s.png', md5($this->attributes['email']));
-        }
-
-        return $val;
-    }
-
     public function getNicksAttribute($value)
     {
         return json_decode($value, true);
@@ -128,26 +77,11 @@ class User extends VerifyVersion
         $this->attributes['nicks'] = json_encode($value);
     }
 
-
-    public function isAdmin()
-    {
-        return $this->is(array(Config::get('auth::roles.super_group_name'), Config::get('auth::roles.admin_group_name')));
-    }
-
     public function transform()
     {
-        return [
-            'id'         => (int)$this->id,
-            'username'   => (string) $this->username,
-            'name'       => (string) $this->name,
-            'href'       => (string) $this->makeLink(true),
-            'link'       => (string) $this->makeLink(false),
-
-            'email'      => (string) $this->email,
-            'avatar'     => (string) $this->avatar,
-
-
-            'registered' => date_array($this->created_at),
-        ];
+        $return = parent::transform();
+        return array_merge($return, [
+            'name'       => (string) $this->screenname,
+        ]);
     }
 }

@@ -132,7 +132,6 @@ class DbRepository extends BaseDbRepository implements RepositoryInterface
             if ($user->mode_lh == 'Y') { $channelModes .= 'h'; }
             if ($user->mode_lv == 'Y') { $channelModes .= 'v'; }
 
-
             if ($user->hiddenhostname == 'services.darkscience.net') {
                 $user->ctcpversion = 'atheme';
             }
