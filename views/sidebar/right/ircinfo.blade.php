@@ -16,5 +16,5 @@
 
             <div class="row">
                 <div class="col-md-4">Like Us!</div>
-                <div class="col-md-6"><iframe frameborder="0" allowtransparency="true" style="border:none; overflow:hidden; width:450px; height:21px;" scrolling="no" src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fdarchoods.net&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=true&amp;font=segoe+ui&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=225821644138707"></iframe></div>
+                <div class="col-md-6"><iframe frameborder="0" allowtransparency="true" style="border:none; overflow:hidden; width:100px; height:21px;" scrolling="no" src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fdarchoods.net&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=true&amp;font=segoe+ui&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=225821644138707"></iframe></div>
             </div>
